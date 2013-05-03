@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Atomicity</title>
+
+		<link rel="stylesheet" type="text/css" href="google-code-prettify/prettify.css" />
+		<style type="text/css">
+html,
+body {
+	padding: 0;
+	margin: 0;
+	background-color: #eeeeee;
+}
+
+body {
+	text-align: center;
+	font-size: 0;
+}
+
+.field {
+	overflow: auto;
+	text-align: left;
+	font: bold 14px "Courier New",monospace;
+	margin: 0 !important;
+	padding: 5px !important;
+	border: none !important;
+	background-color: #ffffff;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+	resize: vertical;
+}
+
+#input,
+#output {
+	text-align: left;
+	vertical-align: top;
+	min-width: 400px;
+	width: 45%;
+	margin-left: 2%;
+	margin-right: 2%;
+}
+
+#input {
+	display: inline-table;
+	border-spacing: 10px;
+	margin-top: 20px;
+}
+
+#input > fieldset {
+	display: table-row-group;
+}
+
+#input > label {
+	display: table-row;
+}
+
+#input > label > * {
+	display: table-cell;
+	vertical-align: top;
+}
+
+#input > label > span.label {
+	font: 12px "Verdana",sans-serif;
+	color: #444444;
+	text-shadow: 1px 1px rgba(255, 255, 255, 1);
+	padding: 5px;
+	text-align: right;
+}
+
+#input > label > span.greedy {
+	width: 100%;
+}
+
+#input > label > span .field {
+	width: 100%;	
+}
+
+#output {
+	display: inline-block;
+	margin-top: 30px;
+}
+
+#output .controls {
+	margin: 10px 0;
+}
+		</style>
+
+		<!-- http://code.jquery.com/jquery-1.9.1.min.js -->
+		<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+		<!-- https://vkbeautify.googlecode.com/files/vkbeautify.0.99.00.beta.js -->
+		<script src="vkbeautify.0.99.00.beta.js"></script>
+		<!-- https://google-code-prettify.googlecode.com/files/prettify-small-4-Mar-2013.tar.bz2 -->
+		<script src="google-code-prettify/prettify.js"></script>
+
+		<script type="text/javascript">
+$(document).ready(function() {
+
+	/*
+	 * Event handlers
+	 */
+
+	$('#input').on('keydown change', '.field', function() {
+		setTimeout(populateXmlFromFields, 0);
+	});
+
+	$('#output .controls button.download').on('click', function() {
+		window.location.href = 'data:application/octet-stream;download="' + new Date().getTime() + '.xml";charset=utf-8;base64,' + btoa($('#output .field').text());
+	});
+
+	$('#output .controls input.upload').on('change', function(event) {
+		var reader = new FileReader();
+
+		reader.addEventListener('load', function(event) {
+			var xml = atob(event.target.result.replace(/^.*,/, '')).replace(/^.*?\?>\n?/, '');
+			populateFieldsFromXml(xml);
+			populateXmlFromFields();
+		});
+
+		reader.readAsDataURL(event.target.files[0]);
+	});
+
+	$('#input, #output').on('submit', false);
+
+	/*
+	 * Startup
+	 */
+
+	populateXmlFromFields();
+	$('#input .field').first().focus();
+
+	/*
+	 * Auxiliary functions
+	 */
+
+	function populateXmlFromFields() {
+		$root = $('<feed xmlns="http://www.w3.org/2005/Atom">');
+		$.each($('#input .field'), function(_, field) {
+			var $field = $(field),
+				fieldName = $field.attr('name'),
+				fieldValue = $field.val();
+
+			var $node = $('<' + fieldName + '>');
+			$node.text(fieldValue);
+			$root.append($node);
+		});
+		$('#output .field').removeClass('prettyprinted').text(vkbeautify.xml('<?xml version="1.0" encoding="utf-8" ?>' + $('<wrapper>').append($root).html()));
+
+		prettyPrint();
+	}
+
+	function populateFieldsFromXml(xml) {
+		var xmlParser = new DOMParser();
+		var xmlDoc = xmlParser.parseFromString(xml, 'text/xml');
+		var $xmlDoc = $(xmlDoc);
+		var $nodes = $xmlDoc.find('feed > *');
+		$.each($nodes, function(_, node) {
+			var fieldName = node.nodeName,
+				fieldValue = node.textContent;
+
+			$('#input .field[name="' + fieldName + '"]').val(fieldValue);
+		});
+	}
+
+});
+		</script>
+	</head>
+	<body>
+		<form id="input">
+			<label><span class="label">Title</span><span class="greedy"><textarea class="field" name="title" type="text"></textarea><span></label>
+			<label><span class="label">Description</span><span class="greedy"><textarea class="field" name="description" type="text"></textarea><span></label>
+		</form>
+		<form id="output">
+			<pre name="display" class="field prettyprint"></pre>
+			<div class="controls">
+				<button class="download">Save File</button>
+				<input type="file" class="upload" />
+			</div>
+		</form>
+	</body>
+</html>
