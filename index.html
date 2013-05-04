@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<title>Atomicity</title>
+		<meta charset="utf-8" />
 
 		<link rel="stylesheet" type="text/css" href="google-code-prettify/prettify.css" />
 		<style type="text/css">
@@ -17,20 +18,29 @@ body {
 	font-size: 0;
 }
 
-.field {
-	overflow: auto;
+.atomicity .field {
 	text-align: left;
 	font: bold 14px "Courier New",monospace;
-	margin: 0 !important;
-	padding: 5px !important;
-	border: none !important;
+	margin: 0;
+	padding: 5px;
+	border: none;
 	background-color: #ffffff;
 	box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 	resize: vertical;
 }
 
-#input,
-#output {
+.atomicity input[type="text"].field {
+	resize: none;
+}
+
+.atomicity button.field {
+	resize: none;
+	background-color: #f0f0f0;
+}
+
+.atomicity #input,
+.atomicity #output {
+	display: inline-block;
 	text-align: left;
 	vertical-align: top;
 	min-width: 400px;
@@ -39,26 +49,30 @@ body {
 	margin-right: 2%;
 }
 
-#input {
-	display: inline-table;
-	border-spacing: 10px;
+.atomicity #input {
 	margin-top: 20px;
 }
 
-#input > fieldset {
+.atomicity #input .table-wrapper {
+	display: table;
+	border-spacing: 10px;
+	margin-right: 10px;
+}
+
+.atomicity #input .table-wrapper > fieldset {
 	display: table-row-group;
 }
 
-#input > label {
+.atomicity #input .table-wrapper > label {
 	display: table-row;
 }
 
-#input > label > * {
+.atomicity #input .table-wrapper > label > * {
 	display: table-cell;
 	vertical-align: top;
 }
 
-#input > label > span.label {
+.atomicity #input .table-wrapper > label > span.label {
 	font: 12px "Verdana",sans-serif;
 	color: #444444;
 	text-shadow: 1px 1px rgba(255, 255, 255, 1);
@@ -66,30 +80,67 @@ body {
 	text-align: right;
 }
 
-#input > label > span.greedy {
+.atomicity #input .table-wrapper > label > span.greedy {
 	width: 100%;
 }
 
-#input > label > span .field {
+.atomicity #input .table-wrapper > label > span .field {
 	width: 100%;	
 }
 
-#output {
+.atomicity #output {
 	display: inline-block;
 	margin-top: 30px;
 }
 
-#output .controls {
-	margin: 10px 0;
+.atomicity #output .view.field {
+	margin: 0 10px;
+}
+
+.atomicity #output .controls {
+	display: table;
+	border-spacing: 10px;
+	width: 100%;
+}
+
+.atomicity #output .controls .row-wrapper {
+	display: table-row;
+}
+
+.atomicity #output .controls .row-wrapper > span {
+	display: table-cell;
+	position: relative;
+}
+
+.atomicity #output .controls .row-wrapper > span.greedy {
+	width: 100%;
+}
+
+.atomicity #output .controls input.filename {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+.atomicity #output .controls .upload-impl {
+	display: none;
 }
 		</style>
 
 		<!-- http://code.jquery.com/jquery-1.9.1.min.js -->
 		<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
 		<!-- https://vkbeautify.googlecode.com/files/vkbeautify.0.99.00.beta.js -->
-		<script src="vkbeautify.0.99.00.beta.js"></script>
+		<script type="text/javascript" src="vkbeautify.0.99.00.beta.js"></script>
 		<!-- https://google-code-prettify.googlecode.com/files/prettify-small-4-Mar-2013.tar.bz2 -->
-		<script src="google-code-prettify/prettify.js"></script>
+		<script type="text/javascript" src="google-code-prettify/prettify.js"></script>
+		<!-- https://raw.github.com/eligrey/Blob.js/master/Blob.js -->
+		<script type="text/javascript" src="Blob.js"></script>
+		<!-- https://raw.github.com/eligrey/Blob.js/master/BlobBuilder.min.js -->
+		<script type="text/javascript" src="BlobBuilder.min.js"></script>
+		<!-- https://raw.github.com/eligrey/FileSaver.js/master/FileSaver.js -->
+		<script type="text/javascript" src="FileSaver.js"></script>
 
 		<script type="text/javascript">
 $(document).ready(function() {
@@ -103,13 +154,22 @@ $(document).ready(function() {
 	});
 
 	$('#output .controls button.download').on('click', function() {
-		window.location.href = 'data:application/octet-stream;download="' + new Date().getTime() + '.xml";charset=utf-8;base64,' + btoa($('#output .field').text());
+		var blobBuilder = new BlobBuilder();
+		blobBuilder.append($('#output .field').text());
+		var blob = blobBuilder.getBlob('data:application/xml;charset=' + document.characterSet);
+		saveAs(blob, $('#output .controls .filename').val());
 	});
 
-	$('#output .controls input.upload').on('change', function(event) {
+	$('#output .controls button.upload').on('click', function() {
+		$('#output .controls input.upload-impl').trigger('click');
+	});
+
+	$('#output .controls input.upload-impl').on('change', function(event) {
+		var filename = $(this).val().split(/(\\|\/)/g).pop();
 		var reader = new FileReader();
 
 		reader.addEventListener('load', function(event) {
+			$('#output .controls .filename').val(filename);
 			var xml = atob(event.target.result.replace(/^.*,/, '')).replace(/^.*?\?>\n?/, '');
 			populateFieldsFromXml(xml);
 			populateXmlFromFields();
@@ -125,6 +185,7 @@ $(document).ready(function() {
 	 */
 
 	populateXmlFromFields();
+	$('#output .controls .filename').val($('#output .controls .filename').val()); // Fixes a Chrome quirk
 	$('#input .field').first().focus();
 
 	/*
@@ -132,7 +193,7 @@ $(document).ready(function() {
 	 */
 
 	function populateXmlFromFields() {
-		$root = $('<feed xmlns="http://www.w3.org/2005/Atom">');
+		var $root = $('<feed xmlns="http://www.w3.org/2005/Atom">');
 		$.each($('#input .field'), function(_, field) {
 			var $field = $(field),
 				fieldName = $field.attr('name'),
@@ -142,7 +203,9 @@ $(document).ready(function() {
 			$node.text(fieldValue);
 			$root.append($node);
 		});
-		$('#output .field').removeClass('prettyprinted').text(vkbeautify.xml('<?xml version="1.0" encoding="utf-8" ?>' + $('<wrapper>').append($root).html()));
+		var xmlBodyText = new XMLSerializer().serializeToString($root.get(0));
+		var xmlHeaderText = '<?xml version="1.0" encoding="' + document.characterSet + '" ?>'
+		$('#output .view.field').removeClass('prettyprinted').text(vkbeautify.xml(xmlHeaderText + xmlBodyText));
 
 		prettyPrint();
 	}
@@ -163,16 +226,22 @@ $(document).ready(function() {
 });
 		</script>
 	</head>
-	<body>
+	<body class="atomicity">
 		<form id="input">
-			<label><span class="label">Title</span><span class="greedy"><textarea class="field" name="title" type="text"></textarea><span></label>
-			<label><span class="label">Description</span><span class="greedy"><textarea class="field" name="description" type="text"></textarea><span></label>
+			<div class="table-wrapper">
+				<label><span class="label">Title</span><span class="greedy"><textarea class="field" name="title" type="text"></textarea><span></label>
+				<label><span class="label">Description</span><span class="greedy"><textarea class="field" name="description" type="text"></textarea><span></label>
+			</div>
 		</form>
 		<form id="output">
-			<pre name="display" class="field prettyprint"></pre>
+			<pre name="display" class="view field prettyprint"></pre>
 			<div class="controls">
-				<button class="download">Save File</button>
-				<input type="file" class="upload" />
+				<div class="row-wrapper">
+					<span class="greedy"><input type="text" class="filename field" value="untitled.xml" /></span>
+					<span><button class="download field">Save</button></span>
+					<span><button class="upload field">Open</button></span>
+				</div>
+				<input type="file" class="upload-impl" />
 			</div>
 		</form>
 	</body>
