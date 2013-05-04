@@ -5,138 +5,7 @@
 		<meta charset="utf-8" />
 
 		<link rel="stylesheet" type="text/css" href="google-code-prettify/prettify.css" />
-		<style type="text/css">
-html,
-body {
-	padding: 0;
-	margin: 0;
-	background-color: #eeeeee;
-}
-
-body {
-	text-align: center;
-	font-size: 0;
-}
-
-.atomicity .field {
-	text-align: left;
-	font: bold 14px "Courier New",monospace;
-	margin: 0;
-	padding: 5px;
-	border: none;
-	background-color: #ffffff;
-	box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-	resize: vertical;
-}
-
-.atomicity input[type="text"].field {
-	resize: none;
-}
-
-.atomicity button.field {
-	cursor: pointer;
-	resize: none;
-	background-color: #f0f0f0;
-}
-
-.atomicity button.field:hover {
-	background-color: #f7f7f7;
-}
-
-.atomicity button.field:active {
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
-
-.atomicity #input,
-.atomicity #output {
-	display: inline-block;
-	text-align: left;
-	vertical-align: top;
-	min-width: 400px;
-	width: 45%;
-	margin-left: 2%;
-	margin-right: 2%;
-}
-
-.atomicity #input {
-	margin-top: 20px;
-}
-
-.atomicity #input .table-wrapper {
-	display: table;
-	border-spacing: 10px;
-	margin-right: 10px;
-}
-
-.atomicity #input .table-wrapper > fieldset {
-	display: table-row-group;
-}
-
-.atomicity #input .table-wrapper > label {
-	display: table-row;
-}
-
-.atomicity #input .table-wrapper > label > * {
-	display: table-cell;
-	vertical-align: top;
-}
-
-.atomicity #input .table-wrapper > label > span.label {
-	font: 12px "Verdana",sans-serif;
-	color: #444444;
-	text-shadow: 1px 1px rgba(255, 255, 255, 1);
-	padding: 5px;
-	text-align: right;
-}
-
-.atomicity #input .table-wrapper > label > span.greedy {
-	width: 100%;
-}
-
-.atomicity #input .table-wrapper > label > span .field {
-	width: 100%;	
-}
-
-.atomicity #output {
-	display: inline-block;
-	margin-top: 20px;
-}
-
-.atomicity #output .view.field {
-	margin: 0 10px;
-}
-
-.atomicity #output .controls {
-	display: table;
-	border-spacing: 10px;
-	width: 100%;
-}
-
-.atomicity #output .controls .row-wrapper {
-	display: table-row;
-}
-
-.atomicity #output .controls .row-wrapper > span {
-	display: table-cell;
-	position: relative;
-}
-
-.atomicity #output .controls .row-wrapper > span.greedy {
-	width: 100%;
-}
-
-.atomicity #output .controls input.filename {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-}
-
-.atomicity #output .controls .upload-impl {
-	display: none;
-}
-		</style>
+		<link rel="stylesheet" type="text/css" href="atomicity.css" />
 
 		<!-- http://code.jquery.com/jquery-1.9.1.min.js -->
 		<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
@@ -151,107 +20,40 @@ body {
 		<!-- https://raw.github.com/eligrey/FileSaver.js/master/FileSaver.js -->
 		<script type="text/javascript" src="FileSaver.js"></script>
 
-		<script type="text/javascript">
-$(document).ready(function() {
-
-	/*
-	 * Event handlers
-	 */
-
-	$('#input').on('keydown change', '.field', function() {
-		setTimeout(populateXmlFromFields, 0);
-	});
-
-	$('#output .controls button.download').on('click', function() {
-		var blobBuilder = new BlobBuilder();
-		blobBuilder.append($('#output .field').text());
-		var blob = blobBuilder.getBlob('data:application/xml;charset=' + document.characterSet);
-		saveAs(blob, $('#output .controls .filename').val());
-	});
-
-	$('#output .controls button.upload').on('click', function() {
-		$('#output .controls input.upload-impl').trigger('click');
-	});
-
-	$('#output .controls input.upload-impl').on('change', function(event) {
-		var filename = $(this).val().split(/(\\|\/)/g).pop();
-		var reader = new FileReader();
-
-		reader.addEventListener('load', function(event) {
-			$('#output .controls .filename').val(filename);
-			var xml = atob(event.target.result.replace(/^.*,/, '')).replace(/^.*?\?>\n?/, '');
-			populateFieldsFromXml(xml);
-			populateXmlFromFields();
-		});
-
-		reader.readAsDataURL(event.target.files[0]);
-	});
-
-	$('#input, #output').on('submit', false);
-
-	/*
-	 * Startup
-	 */
-
-	populateXmlFromFields();
-	$('#output .controls .filename').val($('#output .controls .filename').val()); // Fixes a Chrome quirk
-	$('#input .field').first().focus();
-
-	/*
-	 * Auxiliary functions
-	 */
-
-	function populateXmlFromFields() {
-		var $root = $('<feed xmlns="http://www.w3.org/2005/Atom">');
-		$.each($('#input .field'), function(_, field) {
-			var $field = $(field),
-				fieldName = $field.attr('name'),
-				fieldValue = $field.val();
-
-			var $node = $('<' + fieldName + '>');
-			$node.text(fieldValue);
-			$root.append($node);
-		});
-		var xmlBodyText = new XMLSerializer().serializeToString($root.get(0));
-		var xmlHeaderText = '<?xml version="1.0" encoding="' + document.characterSet + '" ?>'
-		$('#output .view.field').removeClass('prettyprinted').text(vkbeautify.xml(xmlHeaderText + xmlBodyText));
-
-		prettyPrint();
-	}
-
-	function populateFieldsFromXml(xml) {
-		var xmlParser = new DOMParser();
-		var xmlDoc = xmlParser.parseFromString(xml, 'text/xml');
-		var $xmlDoc = $(xmlDoc);
-		var $nodes = $xmlDoc.find('feed > *');
-		$.each($nodes, function(_, node) {
-			var fieldName = node.nodeName,
-				fieldValue = node.textContent;
-
-			$('#input .field[name="' + fieldName + '"]').val(fieldValue);
-		});
-	}
-
-});
-		</script>
+		<script type="text/javascript" src="atomicity.js"></script>
 	</head>
 	<body class="atomicity">
 		<form id="input">
-			<div class="table-wrapper">
-				<label><span class="label">Title</span><span class="greedy"><textarea class="field" name="title" type="text"></textarea><span></label>
-				<label><span class="label">Description</span><span class="greedy"><textarea class="field" name="description" type="text"></textarea><span></label>
+			<div class="table">
+				<label class="table-row">
+					<div class="label table-cell">ID</div>
+					<div class="greedy table-cell"><textarea class="stretchy resizable field" name="id" type="text"></textarea></div>
+				</label>
+				<label class="table-row">
+					<div class="label table-cell">Title</div>
+					<div class="greedy table-cell"><textarea class="stretchy resizable field" name="title" type="text"></textarea></div>
+				</label>
+				<label class="table-row">
+					<div class="label table-cell">Description</div>
+					<div class="greedy table-cell"><textarea class="stretchy resizable field" name="description" type="text"></textarea></div>
+				</label>
+				<label class="table-row hidden">
+					<input type="hidden" class="timestamp field" name="updated" type="text" />
+				</label>
 			</div>
 		</form>
 		<form id="output">
-			<div class="controls">
-				<div class="row-wrapper">
-					<span class="greedy"><input type="text" class="filename field" value="untitled.xml" /></span>
-					<span><button class="download field">Save</button></span>
-					<span><button class="upload field">Open</button></span>
+			<div class="controls table">
+				<div class="table-row">
+					<div class="greedy table-cell"><input type="text" class="stretchy filename field" value="untitled.xml" /></div>
+					<div class="table-cell"><button class="download field">Save</button></div>
+					<div class="table-cell"><button class="upload field">Open</button></div>
 				</div>
-				<input type="file" class="upload-impl" />
 			</div>
-			<pre name="display" class="view field prettyprint"></pre>
+			<pre name="display" class="view resizable field prettyprint"></pre>
 		</form>
+		<div id="hidden">
+			<input type="file" class="upload-impl" />
+		</div>
 	</body>
 </html>

@@ -1,0 +1,116 @@
+html,
+body {
+	padding: 0;
+	margin: 0;
+	font-size: 0;
+	background-color: #eeeeee;
+	-moz-user-select: none;
+	-o-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+body {
+	text-align: center;
+}
+
+body,
+textarea,
+input,
+button {
+	font-family: "Courier New",monospace;
+	font-weight: bold;
+}
+
+.atomicity .field {
+	text-align: left;
+	font-size: 14px;
+	margin: 0;
+	padding: 5px;
+	border: none;
+	background-color: #ffffff;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+	-moz-user-select: text;
+	-o-user-select: text;
+	-webkit-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+.atomicity .stretchy.field {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.atomicity .resizable.field {
+	resize: vertical;
+}
+
+.atomicity button.field {
+	cursor: pointer;
+	background-color: #f0f0f0;
+	-moz-user-select: none;
+	-o-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.atomicity button.field:hover {
+	background-color: #f7f7f7;
+}
+
+.atomicity button.field:active {
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.atomicity .table {
+	display: table;
+	border-spacing: 10px;
+	width: 100%;
+}
+
+.atomicity .table-row {
+	display: table-row;
+}
+
+.atomicity .table-cell {
+	display: table-cell;
+}
+
+.atomicity .greedy.table-cell {
+	width: 100%;
+}
+
+.atomicity .hidden {
+	display: none;
+}
+
+.atomicity #input,
+.atomicity #output {
+	display: inline-block;
+	text-align: left;
+	vertical-align: top;
+	min-width: 400px;
+	width: 45%;
+	margin: 20px;
+}
+
+.atomicity #input .label {
+	vertical-align: top;
+	font-size: 14px;
+	color: #444444;
+	text-shadow: 1px 1px rgba(255, 255, 255, 1);
+	padding: 5px;
+	text-align: right;
+}
+
+.atomicity #output .view.field {
+	overflow-x: auto;
+	margin: 0 10px 10px;
+}
+
+.atomicity #hidden {
+	display: none;
+}
