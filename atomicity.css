@@ -106,6 +106,14 @@ button {
 	text-align: right;
 }
 
+.atomicity #input .label:hover {
+	background-color: #e7e7e7;
+}
+
+.atomicity #input .label:active {
+	background-color: #e0e0e0;
+}
+
 .atomicity #output .view.field {
 	overflow-x: auto;
 	margin: 0 10px 10px;
