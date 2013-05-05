@@ -26,6 +26,7 @@ button {
 .atomicity .field {
 	text-align: left;
 	font-size: 14px;
+	height: 28px;
 	margin: 0;
 	padding: 5px;
 	border: none;
@@ -48,6 +49,7 @@ button {
 }
 
 .atomicity button.field {
+	white-space: nowrap;
 	cursor: pointer;
 	background-color: #f0f0f0;
 	-moz-user-select: none;
@@ -75,8 +77,13 @@ button {
 	display: table-row;
 }
 
+.atomicity .table-row-group {
+	display: table-row-group;
+}
+
 .atomicity .table-cell {
 	display: table-cell;
+	vertical-align: top;
 }
 
 .atomicity .greedy.table-cell {
@@ -85,6 +92,32 @@ button {
 
 .atomicity .hidden {
 	display: none;
+}
+
+.atomicity .entry .section {
+	display: none;
+}
+
+.atomicity .entry.expanded {
+	height: auto;
+	background-color: transparent;
+	box-shadow: none;
+}
+
+.atomicity .entry .expand::before {
+	content: 'Expand';
+}
+
+.atomicity .entry.expanded .expand::before {
+	content: 'Hide';
+}
+
+.atomicity .entry.expanded .table-row.section {
+	display: table-row;
+}
+
+.atomicity .entry.add .label {
+	opacity: 0.5;
 }
 
 .atomicity #input,
@@ -104,6 +137,7 @@ button {
 	text-shadow: 1px 1px rgba(255, 255, 255, 1);
 	padding: 5px;
 	text-align: right;
+	white-space: nowrap;
 }
 
 .atomicity #input .label:hover {
@@ -114,11 +148,32 @@ button {
 	background-color: #e0e0e0;
 }
 
+.atomicity #input .entry {
+	counter-increment: entry-counter;
+}
+
+.atomicity #input .entry .entry-counter::before {
+	content: counter(entry-counter, decimal);
+}
+
+.atomicity #input .delete {
+	color: #ff0000;
+}
+
+.atomicity #input .delete::before {
+	content: 'x';
+}
+
 .atomicity #output .view.field {
+	height: auto;
 	overflow-x: auto;
 	margin: 0 10px 10px;
 }
 
 .atomicity #hidden {
 	display: none;
+}
+
+.atomicity #input .add::before {
+	content: 'Add';
 }

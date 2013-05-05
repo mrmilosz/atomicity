@@ -19,25 +19,41 @@
 		<script type="text/javascript" src="BlobBuilder.min.js"></script>
 		<!-- https://raw.github.com/eligrey/FileSaver.js/master/FileSaver.js -->
 		<script type="text/javascript" src="FileSaver.js"></script>
+		<!-- https://raw.github.com/timrwood/moment/2.0.0/min/moment.min.js -->
+		<script type="text/javascript" src="moment.min.js"></script>
 
 		<script type="text/javascript" src="atomicity.js"></script>
 	</head>
 	<body class="atomicity">
+
 		<form id="input">
 			<div class="table">
-				<label class="table-row">
-					<div class="label table-cell">ID</div>
-					<div class="greedy table-cell"><textarea class="stretchy resizable field" name="id" type="text"></textarea></div>
-				</label>
-				<label class="table-row">
-					<div class="label table-cell">Title</div>
-					<div class="greedy table-cell"><textarea class="stretchy resizable field" name="title" type="text"></textarea></div>
-				</label>
-				<label class="table-row hidden">
-					<input type="hidden" class="timestamp field" name="updated" type="text" />
-				</label>
+				<div class="section-group feed table-row-group">
+					<label class="section table-row" data-name="id">
+						<div class="label table-cell">ID</div>
+						<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
+					</label>
+					<label class="section table-row" data-name="title">
+						<div class="label table-cell">Title</div>
+						<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
+					</label>
+					<label class="timestamp section table-row" data-name="updated">
+						<div class="label table-cell">Updated</div>
+						<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
+						<div class="table-cell"><button class="field default">Now</button></div>
+					</label>
+				</div>
+
+				<div class="section-group add entry table-row-group">
+					<div class="placeholder table-row">
+						<div class="label table-cell">Entry <span class="entry-counter"></span></div>
+						<div class="greedy table-cell"><button class="field add"></button></div>
+					</div>
+				</div>
 			</div>
+
 		</form>
+
 		<form id="output">
 			<div class="controls table">
 				<div class="table-row">
@@ -48,8 +64,40 @@
 			</div>
 			<pre name="display" class="view resizable field prettyprint"></pre>
 		</form>
+
 		<div id="hidden">
 			<input type="file" class="upload-impl" />
+
+			<div id="entry-template">
+
+				<div class="section-group entry table-row-group">
+					<div class="placeholder table-row">
+						<div class="label table-cell">Entry <span class="entry-counter"></span></div>
+						<div class="greedy table-cell"><button class="field stretchy expand"></button></div>
+						<div class="table-cell"><button class="field delete"></button></div>
+					</div>
+
+					<label class="section table-row" data-name="id title">
+						<div class="label table-cell">Title</div>
+						<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
+					</label>
+					<label class="section table-row" data-name="content">
+						<div class="label table-cell">Content</div>
+						<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
+					</label>
+					<label class="section table-row" data-name="summary">
+						<div class="label table-cell">Summary</div>
+						<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
+					</label>
+					<label class="timestamp section table-row" data-name="updated">
+						<div class="label table-cell">Updated</div>
+						<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
+						<div class="table-cell"><button class="field default">Now</button></div>
+					</label>
+				</div>
+
+			</div>
 		</div>
+
 	</body>
 </html>
