@@ -2,8 +2,12 @@ html,
 body {
 	padding: 0;
 	margin: 0;
-	font-size: 0;
 	background-color: #eeeeee;
+}
+
+.atomicity {
+	font-size: 0;
+	text-align: center;
 	-moz-user-select: none;
 	-o-user-select: none;
 	-webkit-user-select: none;
@@ -11,14 +15,10 @@ body {
 	user-select: none;
 }
 
-body {
-	text-align: center;
-}
-
-body,
-textarea,
-input,
-button {
+.atomicity,
+.atomicity textarea,
+.atomicity input,
+.atomicity button {
 	font-family: "Courier New",monospace;
 	font-weight: bold;
 }
@@ -51,7 +51,8 @@ button {
 .atomicity button.field {
 	white-space: nowrap;
 	cursor: pointer;
-	background-color: #f0f0f0;
+	background-color: #c0c0c0;
+	text-shadow: 1px 1px rgba(255, 255, 255, 0.2);
 	-moz-user-select: none;
 	-o-user-select: none;
 	-webkit-user-select: none;
@@ -60,7 +61,7 @@ button {
 }
 
 .atomicity button.field:hover {
-	background-color: #f7f7f7;
+	background-color: #c7c7c7;
 }
 
 .atomicity button.field:active {
@@ -157,7 +158,7 @@ button {
 }
 
 .atomicity #input .delete {
-	color: #ff0000;
+	color: #770000;
 }
 
 .atomicity #input .delete::before {
