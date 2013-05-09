@@ -26,7 +26,7 @@ body {
 .atomicity .field {
 	text-align: left;
 	font-size: 14px;
-	height: 28px;
+	height: 2em;
 	margin: 0;
 	padding: 5px;
 	border: none;
@@ -175,6 +175,70 @@ body {
 	display: none;
 }
 
-.atomicity #input .add::before {
+.atomicity #input .field.add::before {
 	content: 'Add';
+}
+
+.atomicity .field ~ .tagit,
+.atomicity .field ~ .tagit li {
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-radius: 0;
+}
+
+.atomicity .field ~ .tagit {
+	font-family: "Courier New",monospace;
+	text-shadow: 1px 1px rgba(255, 255, 255, 1);
+	font-size: 14px;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+	font-weight: bold;
+	cursor: text;
+	padding-left: 1px;
+}
+
+.atomicity .field ~ .tagit .tagit-choice {
+	padding: 4px;
+	padding-right: 16px;
+	margin: 1px;
+	margin-left: 0;
+	margin-bottom: 0;
+	box-sizing: border-box;
+	white-space: nowrap;
+}
+
+.atomicity .field ~ .tagit .tagit-choice .tagit-close .text-icon {
+	margin-right: 2px;
+	text-align: center;
+	color: #770000;
+	font-size: 14px;
+	display: block;
+}
+
+.atomicity .field ~ .tagit .tagit-choice.remove .tagit-close .text-icon {
+	display: none;
+}
+
+.atomicity .field ~ .tagit .tagit-choice.remove.ui-state-highlight {
+	opacity: 0.5;
+	background-color: #ffdddd;
+}
+
+.atomicity .field ~ .tagit .tagit-close .ui-icon-close {
+	background: none;
+	display: none;
+}
+
+.atomicity .resizable.field ~ .tagit {
+	resize: vertical;
+}
+
+.atomicity .resizable.field ~ .tagit * {
+	resize: none;
+}
+
+.atomicity .resizable.field ~ .tagit .tagit-new input {
+	padding: 5px;
+	padding-left: 4px;
 }

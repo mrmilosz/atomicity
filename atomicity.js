@@ -87,6 +87,7 @@ $(document).ready(function() {
 
 	function addEntry() {
 		var $entry = $('#entry-template').clone().children();
+
 		var $addEntry = $('#input .add.section-group');
 		$addEntry.before($entry);
 
@@ -97,7 +98,7 @@ $(document).ready(function() {
 	}
 
 	function clearEntries() {
-		$('.section-group').not('.feed, .add').remove();
+		$('#input .section-group').not('.feed, .add').remove();
 	}
 
 	function populateXmlFromFields() {
@@ -155,8 +156,8 @@ $(document).ready(function() {
 		var xmlDoc = xmlParser.parseFromString(xml, 'text/xml');
 		var $xmlDoc = $(xmlDoc);
 
-		$('#input .section-group.entry:not(.add)').remove();
-		
+		clearEntries();
+
 		(function recurse($nodes, $container) {
 			$.each($nodes, function(_, node) {
 				var $node = $(node);
@@ -182,14 +183,30 @@ $(document).ready(function() {
 					}
 
 					if ($section.hasClass('multi')) {
-						$input.val(extendCommaSeparatedList($input.val(), fieldValue));
+						if ($section.hasClass('tag')) {
+							$input.tagit('createTag', fieldValue);
+						}
+						else {
+							$input.val(extendCommaSeparatedList($input.val(), fieldValue));
+						}
 					}
 					else {
-						$input.val(fieldValue);
+						if ($section.hasClass('tag')) {
+							$.each(commaSeparatedListToArray(fieldValue), function(_, term) {
+								$input.tagit('createTag', term);
+							});
+						}
+						else {
+							$input.val(fieldValue);
+						}
 					}
 				}
 			});
 		})($xmlDoc.find('feed > *'), $('#input .feed.section-group'));
+	}
+
+	function commaSeparatedListToArray(list) {
+		return list.split(/\s*,\s*/);
 	}
 
 	function extendCommaSeparatedList(list, value) {
@@ -200,67 +217,62 @@ $(document).ready(function() {
 		return moment(time).format('MMMM D, YYYY, HH:mm:ss');
 	}
 
-	// Since autocomplete can't be bound as a live handler
+	// Since tagit can't be bound as a live handler
 	function wireInput($inputs) {
 		$inputs.each(function(_, input) {
 			var $input = $(input),
 				$section = $input.parents('.section');
 
-			if ($section.hasClass('select')) {
-				// don't navigate away from the field on tab when selecting an item
-				$input.on('keydown', function(event) {
-					if (event.keyCode === $.ui.keyCode.TAB && $(this).data('ui-autocomplete').menu.active) {
-						event.preventDefault();
-					}
-				}); 
+			if ($section.hasClass('tag')) {
+				var tagitOptions = {
+					allowSpaces: true,
+					caseSensitive: false,
+					removeConfirmation: true
+				};
 
-				$input.on('blur', function() {
-					$input.val($input.val().replace(/\s*,\s*$/, ''));
-				});
+				if ($section.hasClass('select')) {
+					$.extend(tagitOptions, {
+						autocomplete: {
+							delay: 0,
+							minLength: 0,
+							source: function(request, response) {
+								var choices = $section.data('choices');
 
-				$input.autocomplete({
-					delay: 0,
-					minLength: 0,
-					source: function(request, response) {
-						var choices = $section.data('choices');
+								if (choices instanceof Array) {
+									; // done
+								}
+								else if (typeof choices === 'string') {
+									var parts = choices.split(';'),
+										attribute = parts[0],
+										source = parts[1];
 
-						if (choices instanceof Array) {
-							; // done
-						}
-						else if (typeof choices === 'string') {
-							var parts = choices.split(';'),
-								attribute = parts[0],
-								source = parts[1];
+									if (source === 'other') {
+										var $otherSections = $('#input .entry.section-group').not($section.parents('.section-group')).find('.section[data-name~="' + attribute + '"]');
+										choices = $.map($otherSections, function(otherSection) {
+											return $(otherSection).find('.input').val();
+										});
+									}
 
-							if (source === 'other') {
-								var $otherSections = $('#input .entry.section-group').not($section.parents('.section-group')).find('.section[data-name~="' + attribute + '"]');
-								choices = $.map($otherSections, function(otherSection) {
-									return $(otherSection).find('.input').val();
-								});
+									// TODO more options
+									else {
+										choices = [];
+									}
+								}
+
+								var eligibleTerms = $input.tagit('assignedTags')
+								var lastTerm = request.term.split(/\s*,\s*/).pop();
+								var chosenTerms = $.ui.autocomplete.filter(subtractArray(choices, eligibleTerms), lastTerm);
+								response(chosenTerms);
+							},
+							focus: function() {
+								// prevent value inserted on focus
+								return false;
 							}
 						}
+					});
+				}
 
-						var eligibleTerms = request.term.split(/\s*,\s*/);
-						var lastTerm = eligibleTerms.pop();
-						var chosenTerms = $.ui.autocomplete.filter(subtractArray(choices, eligibleTerms), lastTerm);
-						response(chosenTerms);
-					},
-					focus: function() {
-						// prevent value inserted on focus
-						return false;
-					},
-					select: function(event, ui) {
-						var terms = $input.val().split(/\s*,\s*/);
-						// remove the current input
-						terms.pop();
-						// add the selected item
-						terms.push(ui.item.value);
-						// add placeholder to get the comma-and-space at the end
-						terms.push('');
-						$input.val(terms.join(', '));
-						return false;
-					}
-				});
+				$input.tagit(tagitOptions);
 			}
 		});
 	}
@@ -272,6 +284,15 @@ $(document).ready(function() {
 		});
 		return $.grep(minuend, function(item) {
 			return hash[item.toLowerCase()] === undefined;
+		});
+	}
+
+	function removeDuplicates(array) {
+		var hash = {};
+		return $.grep(array, function(item) {
+			var returnItem = hash[item] === undefined;
+			hash[item] = 1;
+			return returnItem;
 		});
 	}
 

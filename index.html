@@ -4,11 +4,14 @@
 		<title>Atomicity</title>
 		<meta charset="utf-8" />
 
-		<link rel="stylesheet" type="text/css" href="google-code-prettify/prettify.css" />
-		<link rel="stylesheet" type="text/css" href="atomicity.css" />
-
 		<!-- http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css -->
 		<link rel="stylesheet" type="text/css" href="jquery-ui.css" />
+		<!-- http://github.com/aehlke/tag-it/zipball/master -->
+		<link rel="stylesheet" type="text/css" href="aehlke-tag-it-d416408/css/jquery.tagit.css" />
+		<!-- https://google-code-prettify.googlecode.com/files/prettify-small-4-Mar-2013.tar.bz2 -->
+		<link rel="stylesheet" type="text/css" href="google-code-prettify/prettify.css" />
+
+		<link rel="stylesheet" type="text/css" href="atomicity.css" />
 
 		<!-- http://code.jquery.com/jquery-1.9.1.min.js -->
 		<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
@@ -26,6 +29,8 @@
 		<script type="text/javascript" src="FileSaver.js"></script>
 		<!-- https://raw.github.com/timrwood/moment/2.0.0/min/moment.min.js -->
 		<script type="text/javascript" src="moment.min.js"></script>
+		<!-- http://github.com/aehlke/tag-it/zipball/master -->
+		<script type="text/javascript" src="aehlke-tag-it-d416408/js/tag-it.min.js"></script>
 
 		<script type="text/javascript" src="atomicity.js"></script>
 	</head>
@@ -87,17 +92,17 @@
 							<div class="label table-cell">Title</div>
 							<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
 						</label>
-						<label class="multi select section table-row" data-name="category" data-attr="term" data-choices="title;other">
+						<label class="tag multi select section table-row" data-name="category" data-attr="term" data-choices="title;other">
 							<div class="label table-cell">Inherits</div>
-							<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
+							<div class="greedy table-cell"><input class="stretchy resizable field input" type="text" /></div>
 						</label>
-						<label class="select section table-row" data-name="content" data-choices='["Admin", "Nable Admin", "Product Admin", "SO Admin", "SO User"]'>
-							<div class="label table-cell">Roles</div>
-							<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
+						<label class="tag select section table-row" data-name="content" data-choices='["Admin", "Nable Admin", "Product Admin", "SO Admin", "SO User"]'>
+							<div class="label table-cell">Account Types</div>
+							<div class="greedy table-cell"><input class="stretchy resizable field input" type="text" /></div>
 						</label>
-						<label class="section table-row" data-name="summary">
+						<label class="tag section table-row" data-name="summary">
 							<div class="label table-cell">Versions</div>
-							<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
+							<div class="greedy table-cell"><input class="stretchy resizable field input" type="text" /></div>
 						</label>
 						<label class="timestamp section table-row" data-name="updated">
 							<div class="label table-cell">Updated</div>
