@@ -119,7 +119,10 @@ $(document).ready(function() {
 				var $section = $(section),
 					fieldNames = $section.data('name').split(' '),
 					$input = $section.find('.input'),
-					fieldValue = $input.val();
+					fieldValue = $input.val(),
+					attr = $section.data('attr'),
+					definingAttr = $section.data('defining_attr'),
+					definingAttrValue = $section.data('defining_attr_value');
 
 				if ($section.hasClass('timestamp')) {
 					var currentTime = moment(fieldValue);
@@ -130,13 +133,28 @@ $(document).ready(function() {
 
 				$.each(fieldNames, function(_, fieldName) {
 					if ($section.hasClass('multi')) {
-						var attr = $section.data('attr');
-						var $nodes = $($.map(fieldValue.split(/\s*,\s*/), function(value) {
-							return value.length > 0 ? $('<' + fieldName + '/>').attr(attr, value).get(0) : null;
-						}));
+						if (attr !== undefined) {
+							var $nodes = $($.map(fieldValue.split(/\s*,\s*/), function(value) {
+								return value.length > 0 ? $('<' + fieldName + '/>').attr(attr, value).get(0) : null;
+							}));
+						}
+						else {
+							var $nodes = $($.map(fieldValue.split(/\s*,\s*/), function(value) {
+								return value.length > 0 ? $('<' + fieldName + '/>').text(value).get(0) : null;
+							}));
+						}
 					}
 					else {
-						var $nodes = $('<' + fieldName + '>').text(fieldValue);
+						if (attr !== undefined) {
+							var $nodes = $('<' + fieldName + '>').attr(attr, fieldValue);
+						}
+						else {
+							var $nodes = $('<' + fieldName + '>').text(fieldValue);
+						}
+					}
+
+					if (definingAttrValue !== null) {
+						$nodes.attr(definingAttr, definingAttrValue);
 					}
 
 					$container.append($nodes);
@@ -146,7 +164,7 @@ $(document).ready(function() {
 
 		var xmlBodyText = new XMLSerializer().serializeToString($root.get(0));
 		var xmlHeaderText = '<?xml version="1.0" encoding="' + document.characterSet + '" ?>'
-		$('#output .view').removeClass('prettyprinted').text(selfCloseTags(vkbeautify.xml(xmlHeaderText + xmlBodyText)));
+		$('#output .view').removeClass('prettyprinted').text(selfCloseTags(vkbeautify.xml(fixHtmlTags(xmlHeaderText + xmlBodyText))));
 
 		prettyPrint();
 	}
@@ -167,8 +185,20 @@ $(document).ready(function() {
 				}
 				else {
 					var fieldName = node.nodeName,
-						$section = $container.find('.section[data-name~="' + fieldName + '"]'),
-						attribute = $section.data('attr'),
+						$sections = $container.find('.section[data-name~="' + fieldName + '"]');
+
+					var $section = $sections.filter(function() {
+						var $section = $(this),
+							definingAttribute = $section.data('defining_attr'),
+							definingAttributeValue = $section.data('defining_attr_value'),
+							nodeDefiningAttributeValue = node.getAttribute(definingAttribute);
+
+						if (definingAttributeValue === undefined && nodeDefiningAttributeValue === null || nodeDefiningAttributeValue === definingAttributeValue) {
+							return true;
+						}
+					});
+
+					var attribute = $section.data('attr'),
 						$input = $section.find('.input');
 
 					if (attribute !== undefined) {
@@ -300,4 +330,7 @@ $(document).ready(function() {
 		return xmlString.replace(/><\/.+?>/g, ' />');
 	}
 
+	function fixHtmlTags(xmlString) {
+		return xmlString.replace(/(<link[^>]*\s*>)/g, '$1</link>');
+	}
 });
