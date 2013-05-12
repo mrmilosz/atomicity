@@ -4,12 +4,36 @@ $(document).ready(function() {
 	 * Event handlers
 	 */
 
-	$('#input').on('keydown change', '.input', function() {
-		setTimeout(populateXmlFromFields, 0);
+	$('.context-switch').on('click', function() {
+		var $button = $(this);
+		var currentContextClassName = getContextClassName($button);
+		var $allContexts = $('.context');
+
+		if (currentContextClassName === null) {
+			var $nextContext = $allContexts.first();
+		}
+		else {
+			var $currentContext = $allContexts.filter('.' + currentContextClassName);
+			var $nextContext = $($allContexts.get($currentContext.index() % $allContexts.length));
+			$button.removeClass(currentContextClassName)
+			$currentContext.removeClass('visible');
+		}
+
+		var nextContextClassName = getContextClassName($nextContext);
+		$button.addClass(nextContextClassName);
+		$nextContext.addClass('visible');
 	});
 
-	$('#input').on('click', '.default', function() {
-		var $update = $(this),
+	$('.input-container').on('keydown change', '.input', function() {
+		var $context = $(this).parents('.context');
+		setTimeout(function() {
+			populateXmlFromFields($context);
+		}, 0);
+	});
+
+	$('.input-container').on('click', '.default', function() {
+		var $context = $(this).parents('.context'),
+			$update = $(this),
 			$section = $update.parents('.section'),
 		  $input = $section.find('.input');
 
@@ -17,78 +41,87 @@ $(document).ready(function() {
 			$input.val(prettyTime());
 		}
 
-		populateXmlFromFields();
+		populateXmlFromFields($context);
 	});
 
-	$('#input').on('click', '.entry .delete', function() {
-		var $entry = $(this).parents('.section-group');
+	$('.input-container').on('click', '.entry .delete', function() {
+		var $context = $(this).parents('.context'),
+			$entry = $(this).parents('.section-group');
 		if (confirm('Really delete entry?')) {
 			$entry.remove();
 		}
 
-		populateXmlFromFields();
+		populateXmlFromFields($context);
 	});
 
-	$('#input .add.entry .add').on('click', function() {
-		var $entry = addEntry();
-		populateXmlFromFields();
-		if ($('#input .expanded.entry').length === 0) {
+	$('.input-container .add.entry .add').on('click', function() {
+		var $context = $(this).parents('.context'),
+			$entry = addEntry($context);
+		populateXmlFromFields($context);
+		if ($context.find('.input-container .expanded.entry').length === 0) {
 			$entry.find('.expand').trigger('click');
 		}
 	});
 
-	$('#input').on('click', '.entry .expand', function() {
+	$('.input-container').on('click', '.entry .expand', function() {
+		var $context = $(this).parents('.context');
 		var $entry = $(this).parents('.section-group');
 		var alreadyExpanded = $entry.hasClass('expanded');
-		$('#input .section-group').removeClass('expanded');
+		$context.find('.input-container .section-group').removeClass('expanded');
 		$entry[(alreadyExpanded ? 'remove' : 'add') + 'Class']('expanded');
 	});
 
-	$('#output .controls button.download').on('click', function() {
+	$('.output-container .controls button.download').on('click', function() {
+		var $context = $(this).parents('.context');
 		var blobBuilder = new BlobBuilder();
-		blobBuilder.append($('#output .view').text());
+		blobBuilder.append($context.find('.output-container .view').text());
 		var blob = blobBuilder.getBlob('data:application/xml;charset=' + document.characterSet);
-		saveAs(blob, $('#output .controls .filename').val());
+		saveAs(blob, $context.find('.output-container .controls .filename').val());
 	});
 
-	$('#output .controls button.upload').on('click', function() {
-		$('#hidden input.upload-impl').trigger('click');
+	$('.output-container .controls button.upload').on('click', function() {
+		$(this).parents('.context').find('.hidden-container input.upload-impl').trigger('click');
 	});
 
-	$('#hidden input.upload-impl').on('change', function(event) {
+	$('.hidden-container input.upload-impl').on('change', function(event) {
+		var $context = $(this).parents('.context');
 		var filename = $(this).val().split(/\\|\//g).pop();
 		var reader = new FileReader();
 
 		reader.addEventListener('load', function(event) {
-			$('#output .controls .filename').val(filename);
+			$context.find('.output-container .controls .filename').val(filename);
 			var xml = atob(event.target.result.replace(/^.*,/, '')).replace(/^.*?\?>\n?/, ''); // look into cleaner ways of doing this (Blob?)
-			populateFieldsFromXml(xml);
-			populateXmlFromFields();
+			populateFieldsFromXml(xml, $context);
+			populateXmlFromFields($context);
 		});
 
 		reader.readAsDataURL(event.target.files[0]);
 	});
 
-	$('#input, #output').on('submit', false);
+	$('.input-container, .output-container').on('submit', false);
 
 	/*
 	 * Startup
 	 */
 
-	$('#output .controls .filename').val($('#output .controls .filename').val()); // Fixes a Chrome quirk
-	$('#input .default').trigger('click');
+	$('.context').each(function(_, context) {
+		var $context = $(context);
+		$context.find('.output-container .controls .filename').val($context.find('.output-container .controls .filename').val()); // Fixes a Chrome quirk
+		$context.find('.input-container .default').trigger('click');
+		populateXmlFromFields($context);
+	});
 
-	populateXmlFromFields();
-	$('#input .input').first().focus();
+	$('.context-switch').trigger('click');
+	$('.input-container .input').first().focus();
 
 	/*
 	 * Auxiliary functions
 	 */
 
-	function addEntry() {
-		var $entry = $('#entry-template').clone().children();
+	function addEntry($context) {
+		var $entry = $context.find('.hidden-container .templates > .entry').clone().children();
 
-		var $addEntry = $('#input .add.section-group');
+		var $addEntry = $context.find('.input-container .add.section-group');
 		$addEntry.before($entry);
 
 		$entry.find('.default').trigger('click');
@@ -97,15 +130,15 @@ $(document).ready(function() {
 		return $entry;
 	}
 
-	function clearEntries() {
-		$('#input .section-group').not('.feed, .add').remove();
+	function clearEntries($context) {
+		$context.find('.input-context .section-group').not('.feed, .add').remove();
 	}
 
-	function populateXmlFromFields() {
+	function populateXmlFromFields($context) {
 		var $root = $('<feed xmlns="http://www.w3.org/2005/Atom">');
 		var $container = $root;
 
-		$.each($('#input .section-group'), function(_, section) {
+		$.each($context.find('.input-container .section-group'), function(_, section) {
 			var $sectionGroup = $(this);
 
 			if ($sectionGroup.hasClass('entry')) {
@@ -164,24 +197,24 @@ $(document).ready(function() {
 
 		var xmlBodyText = new XMLSerializer().serializeToString($root.get(0));
 		var xmlHeaderText = '<?xml version="1.0" encoding="' + document.characterSet + '" ?>'
-		$('#output .view').removeClass('prettyprinted').text(selfCloseTags(vkbeautify.xml(fixHtmlTags(xmlHeaderText + xmlBodyText))));
+		$context.find('.output-container .view').removeClass('prettyprinted').text(selfCloseTags(vkbeautify.xml(fixHtmlTags(xmlHeaderText + xmlBodyText))));
 
 		prettyPrint();
 	}
 
-	function populateFieldsFromXml(xml) {
+	function populateFieldsFromXml(xml, $context) {
 		var xmlParser = new DOMParser();
 		var xmlDoc = xmlParser.parseFromString(xml, 'text/xml');
 		var $xmlDoc = $(xmlDoc);
 
-		clearEntries();
+		clearEntries($context);
 
 		(function recurse($nodes, $container) {
 			$.each($nodes, function(_, node) {
 				var $node = $(node);
 
 				if ($node.is('entry')) {
-					recurse($node.children(), addEntry());
+					recurse($node.children(), addEntry($context));
 				}
 				else {
 					var fieldName = node.nodeName,
@@ -232,19 +265,7 @@ $(document).ready(function() {
 					}
 				}
 			});
-		})($xmlDoc.find('feed > *'), $('#input .feed.section-group'));
-	}
-
-	function commaSeparatedListToArray(list) {
-		return list.split(/\s*,\s*/);
-	}
-
-	function extendCommaSeparatedList(list, value) {
-		return /^\s*$/.test(list) ? value : (list.replace(/(?:\s*,\s*)?$/, '') + ', ' + value);
-	}
-
-	function prettyTime(time) {
-		return moment(time).format('MMMM D, YYYY, HH:mm:ss');
+		})($xmlDoc.find('feed > *'), $context.find('.input-container .feed.section-group'));
 	}
 
 	// Since tagit can't be bound as a live handler
@@ -277,7 +298,7 @@ $(document).ready(function() {
 										source = parts[1];
 
 									if (source === 'other') {
-										var $otherSections = $('#input .entry.section-group').not($section.parents('.section-group')).find('.section[data-name~="' + attribute + '"]');
+										var $otherSections = $('.input-container .entry.section-group').not($section.parents('.section-group')).find('.section[data-name~="' + attribute + '"]');
 										choices = $.map($otherSections, function(otherSection) {
 											return $(otherSection).find('.input').val();
 										});
@@ -332,5 +353,28 @@ $(document).ready(function() {
 
 	function fixHtmlTags(xmlString) {
 		return xmlString.replace(/(<link[^>]*\s*>)/g, '$1</link>');
+	}
+
+	function commaSeparatedListToArray(list) {
+		return list.split(/\s*,\s*/);
+	}
+
+	function extendCommaSeparatedList(list, value) {
+		return /^\s*$/.test(list) ? value : (list.replace(/(?:\s*,\s*)?$/, '') + ', ' + value);
+	}
+
+	function prettyTime(time) {
+		return moment(time).format('MMMM D, YYYY, HH:mm:ss');
+	}
+
+	function getContextClassName($element) {
+		var contextClassName = null;
+		$.each(['meta', 'content'], function(_, contextName) {
+			if ($element.hasClass(contextName)) {
+				contextClassName = contextName;
+				return false;
+			}
+		});
+		return contextClassName;
 	}
 });

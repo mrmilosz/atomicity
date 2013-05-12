@@ -23,6 +23,14 @@ body {
 	font-weight: bold;
 }
 
+.atomicity .context {
+	display: none;
+}
+
+.atomicity .context.visible {
+	display: block;
+}
+
 .atomicity .field {
 	text-align: left;
 	font-size: 14px;
@@ -121,8 +129,8 @@ body {
 	opacity: 0.5;
 }
 
-.atomicity #input,
-.atomicity #output {
+.atomicity .input-container,
+.atomicity .output-container {
 	display: inline-block;
 	text-align: left;
 	vertical-align: top;
@@ -131,7 +139,7 @@ body {
 	margin: 20px;
 }
 
-.atomicity #input .label {
+.atomicity .input-container .label {
 	vertical-align: top;
 	font-size: 14px;
 	color: #444444;
@@ -141,41 +149,41 @@ body {
 	white-space: nowrap;
 }
 
-.atomicity #input .label:hover {
+.atomicity .input-container .label:hover {
 	background-color: #e7e7e7;
 }
 
-.atomicity #input .label:active {
+.atomicity .input-container .label:active {
 	background-color: #e0e0e0;
 }
 
-.atomicity #input .entry {
+.atomicity .input-container .entry {
 	counter-increment: entry-counter;
 }
 
-.atomicity #input .entry .entry-counter::before {
+.atomicity .input-container .entry .entry-counter::before {
 	content: counter(entry-counter, decimal);
 }
 
-.atomicity #input .delete {
+.atomicity .input-container .delete {
 	color: #770000;
 }
 
-.atomicity #input .delete::before {
+.atomicity .input-container .delete::before {
 	content: 'x';
 }
 
-.atomicity #output .view.field {
+.atomicity .output-container .view.field {
 	height: auto;
 	overflow-x: auto;
 	margin: 0 10px 10px;
 }
 
-.atomicity #hidden {
+.atomicity .hidden-container {
 	display: none;
 }
 
-.atomicity #input .field.add::before {
+.atomicity .input-container .field.add::before {
 	content: 'Add';
 }
 
@@ -241,4 +249,17 @@ body {
 .atomicity .resizable.field ~ .tagit .tagit-new input {
 	padding: 5px;
 	padding-left: 4px;
+}
+
+.atomicity .context-switch-button-container {
+	text-align: center;
+	margin: 20px;
+}
+
+.atomicity button.context-switch.field.meta::before {
+	content: 'Meta (click to switch)';
+}
+
+.atomicity button.context-switch.field.content::before {
+	content: 'Content (click to switch)';
 }
