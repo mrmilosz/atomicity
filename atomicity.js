@@ -25,9 +25,12 @@ $(document).ready(function () {
     });
 
     $('.input-container').on('keydown change', '.input', function () {
-        var $context = $(this).parents('.context');
+        var $this = $(this);
+        var $context = $this.parents('.context');
         setTimeout(function () {
             populateXmlFromFields($context);
+            updateExpandButtonText($this);
+            checkForEmptiness($this);
         }, 0);
     });
 
@@ -134,8 +137,8 @@ $(document).ready(function () {
         $context.find('.input-context .section-group').not('.feed, .add').remove();
     }
 
-    function populateXmlFromFields($context) {
-        var $root = $('<feed xmlns="http://www.w3.org/2005/Atom">\n<id> id </id>\n<title> title </title>');
+    function populateXmlFromFields($context, validate) {
+        var $root = $('<feed xmlns="http://www.w3.org/2005/Atom">\n<id> ID </id>\n<title> Title </title>');
         var $container = $root;
 
         $.each($context.find('.input-container .section-group'), function (_, sectionGroup) {
@@ -379,5 +382,25 @@ $(document).ready(function () {
             }
         });
         return contextClassName;
+    }
+    function updateExpandButtonText($input) {
+        if ($input.parents('.section').is('[data-name~="title"]')) {
+            if (/^\s*$/.test($input.val())) {
+                $input.parents('.entry').find('.placeholder .expand').text(' ');
+            }
+            else {
+                $input.parents('.entry').find('.expand').text($input.val());
+            }
+        }
+    }
+    function checkForEmptiness($input) {
+        if ($input.parents('.section').hasClass('non-empty')) {
+            if (/^\s*$/.test($input.val())) {
+                $input.parents('.section').addClass('invalid');
+            }
+            else {
+                $input.parents('.section').removeClass('invalid');
+            }
+        }
     }
 });

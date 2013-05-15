@@ -114,15 +114,23 @@ body {
 }
 
 .atomicity .entry .expand::before {
-	content: 'Expand';
+	content: 'Expand (';
+}
+
+.atomicity .entry .expand::after {
+    content: ')';
 }
 
 .atomicity .entry.expanded .expand::before {
-	content: 'Hide';
+	content: 'Hide (';
 }
 
 .atomicity .entry.expanded .table-row.section {
 	display: table-row;
+}
+.atomicity .section.invalid .input,
+.atomicity .section.invalid .input.field ~ .tagit{
+    outline: red auto 5px
 }
 
 .atomicity .entry.add .label {
