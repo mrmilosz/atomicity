@@ -74,6 +74,23 @@ $(document).ready(function () {
         $entry[(alreadyExpanded ? 'remove' : 'add') + 'Class']('expanded');
     });
 
+    $('.output-container .controls button.save').on('click', function () {
+        var $context = $(this).parents('.context');
+        var blobBuilder = new BlobBuilder();
+        blobBuilder.append($context.find('.output-container .view').text());
+        var blob = blobBuilder.getBlob('data:application/xml;charset=' + document.characterSet);
+				var formData = new FormData();
+				formData.append($context.find('.output-container .controls .filename').val(), blob);
+
+        $.ajax({
+            url: 'upload.pl',
+            type: 'POST',
+            processData: false,
+						contentType: false,
+            data: formData
+				});
+    });
+
     $('.output-container .controls button.download').on('click', function () {
 
         var $context = $(this).parents('.context');
