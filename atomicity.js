@@ -1,8 +1,8 @@
 $(document).ready(function () {
 
     /*
-    * Event handlers
-    */
+     * Event handlers
+     */
 
     $('.context-switch').on('click', function () {
         var $button = $(this);
@@ -36,9 +36,9 @@ $(document).ready(function () {
 
     $('.input-container').on('click', '.default', function () {
         var $context = $(this).parents('.context'),
-			$update = $(this),
-			$section = $update.parents('.section'),
-		  $input = $section.find('.input');
+            $update = $(this),
+            $section = $update.parents('.section'),
+            $input = $section.find('.input');
 
         if ($section.hasClass('timestamp')) {
             $input.val(prettyTime());
@@ -49,7 +49,8 @@ $(document).ready(function () {
 
     $('.input-container').on('click', '.entry .delete', function () {
         var $context = $(this).parents('.context'),
-			$entry = $(this).parents('.section-group');
+            $entry = $(this).parents('.section-group');
+
         if (confirm('Do you really want to delete this entry?')) {
             $entry.remove();
         }
@@ -59,8 +60,10 @@ $(document).ready(function () {
 
     $('.input-container .add.entry .add').on('click', function () {
         var $context = $(this).parents('.context'),
-			$entry = addEntry($context);
+            $entry = addEntry($context);
+
         populateXmlFromFields($context);
+
         if ($context.find('.input-container .expanded.entry').length === 0) {
             $entry.find('.expand').trigger('click');
         }
@@ -79,20 +82,19 @@ $(document).ready(function () {
         var blobBuilder = new BlobBuilder();
         blobBuilder.append($context.find('.output-container .view').text());
         var blob = blobBuilder.getBlob('data:application/xml;charset=' + document.characterSet);
-				var formData = new FormData();
-				formData.append($context.find('.output-container .controls .filename').val(), blob);
+        var formData = new FormData();
+        formData.append($context.find('.output-container .controls .filename').val(), blob);
 
         $.ajax({
             url: 'upload.pl',
             type: 'POST',
             processData: false,
-						contentType: false,
+            contentType: false,
             data: formData
-				});
+        });
     });
 
     $('.output-container .controls button.download').on('click', function () {
-
         var $context = $(this).parents('.context');
         if ($context.find(".input-container .section.invalid").length > 0) {
             alert("Can't save while there are errors. correct fields marked in red.");
@@ -127,8 +129,8 @@ $(document).ready(function () {
     $('.input-container, .output-container').on('submit', false);
 
     /*
-    * Startup
-    */
+     * Startup
+     */
 
     $('.context').each(function (_, context) {
         var $context = $(context);
@@ -141,8 +143,8 @@ $(document).ready(function () {
     $('.input-container .input').first().focus();
 
     /*
-    * Auxiliary functions
-    */
+     * Auxiliary functions
+     */
 
     function addEntry($context) {
         var $entry = $context.find('.hidden-container .templates > .entry').clone().children();
@@ -176,12 +178,12 @@ $(document).ready(function () {
 
             $.each($(this).find('.section'), function (_, section) {
                 var $section = $(section),
-					fieldNames = $section.data('name').split(' '),
-					$input = $section.find('.input'),
-					fieldValue = $input.val(),
-					attr = $section.data('attr'),
-					definingAttr = $section.data('defining_attr'),
-					definingAttrValue = $section.data('defining_attr_value');
+                    fieldNames = $section.data('name').split(' '),
+                    $input = $section.find('.input'),
+                    fieldValue = $input.val(),
+                    attr = $section.data('attr'),
+                    definingAttr = $section.data('defining_attr'),
+                    definingAttrValue = $section.data('defining_attr_value');
 
                 if (!fieldValue) {
                     return;
@@ -189,8 +191,8 @@ $(document).ready(function () {
                 if ($section.hasClass('timestamp')) {
                     var currentTime = moment(fieldValue);
                     fieldValue = currentTime !== null && currentTime.isValid()
-						? currentTime.utc().format('YYYY-MM-DDThh:mm:ss\\Z')
-						: '';
+                        ? currentTime.utc().format('YYYY-MM-DDThh:mm:ss\\Z')
+                        : '';
                 }
 
                 $.each(fieldNames, function (_, fieldName) {
@@ -247,13 +249,13 @@ $(document).ready(function () {
                 }
                 else {
                     var fieldName = node.nodeName,
-						$sections = $container.find('.section[data-name~="' + fieldName + '"]');
+                        $sections = $container.find('.section[data-name~="' + fieldName + '"]');
 
                     var $section = $sections.filter(function () {
                         var $section = $(this),
-							definingAttribute = $section.data('defining_attr'),
-							definingAttributeValue = $section.data('defining_attr_value'),
-							nodeDefiningAttributeValue = node.getAttribute(definingAttribute);
+                            definingAttribute = $section.data('defining_attr'),
+                            definingAttributeValue = $section.data('defining_attr_value'),
+                            nodeDefiningAttributeValue = node.getAttribute(definingAttribute);
 
                         if (definingAttributeValue === undefined && nodeDefiningAttributeValue === null || nodeDefiningAttributeValue === definingAttributeValue) {
                             return true;
@@ -261,7 +263,7 @@ $(document).ready(function () {
                     });
 
                     var attribute = $section.data('attr'),
-						$input = $section.find('.input');
+                        $input = $section.find('.input');
 
                     if (attribute !== undefined) {
                         var fieldValue = node.getAttribute(attribute);
@@ -301,7 +303,7 @@ $(document).ready(function () {
     function wireInput($inputs) {
         $inputs.each(function (_, input) {
             var $input = $(input),
-				$section = $input.parents('.section');
+                $section = $input.parents('.section');
 
             if ($section.hasClass('tag')) {
                 var tagitOptions = {
@@ -323,8 +325,8 @@ $(document).ready(function () {
                                 }
                                 else if (typeof choices === 'string') {
                                     var parts = choices.split(';'),
-										attribute = parts[0],
-										source = parts[1];
+                                        attribute = parts[0],
+                                        source = parts[1];
 
                                     if (source === 'other') {
                                         var $otherSections = $('.input-container .entry.section-group').not($section.parents('.section-group')).find('.section[data-name~="' + attribute + '"]');
@@ -406,6 +408,7 @@ $(document).ready(function () {
         });
         return contextClassName;
     }
+
     function updateExpandButtonText($input) {
         if ($input.parents('.section').is('[data-name~="title"]')) {
             if (/^\s*$/.test($input.val())) {
@@ -416,6 +419,7 @@ $(document).ready(function () {
             }
         }
     }
+
     function checkForEmptiness($input) {
         if ($input.parents('.section').hasClass('non-empty')) {
             if (/^\s*$/.test($input.val())) {
