@@ -2,7 +2,7 @@
 
 use strict;
 use CGI;
-use CGI::Carp qw (fatalsToBrowser);
+use CGI::Carp qw(fatalsToBrowser);
 use File::Basename;
 use Data::Dumper;
 

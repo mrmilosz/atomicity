@@ -161,7 +161,7 @@ $(document).ready(function () {
     }
 
     function populateXmlFromFields($context, validate) {
-        var $root = $('<feed xmlns="http://www.w3.org/2005/Atom">\n<id> ID </id>\n<title> Title </title>');
+        var $root = $('<feed xmlns="http://www.w3.org/2005/Atom">');
         var $container = $root;
 
         $.each($context.find('.input-container .section-group'), function (_, sectionGroup) {
@@ -409,7 +409,7 @@ $(document).ready(function () {
     function updateExpandButtonText($input) {
         if ($input.parents('.section').is('[data-name~="title"]')) {
             if (/^\s*$/.test($input.val())) {
-                $input.parents('.entry').find('.placeholder .expand').text(' ');
+                $input.parents('.entry').find('.placeholder .expand').text('');
             }
             else {
                 $input.parents('.entry').find('.expand').text($input.val());

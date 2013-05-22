@@ -114,14 +114,22 @@ body {
 }
 
 .atomicity .entry .expand::before {
+	content: 'Expand';
+}
+
+.atomicity .entry .expand:not(:empty)::before {
 	content: 'Expand (';
 }
 
-.atomicity .entry .expand::after {
+.atomicity .entry .expand:not(:empty)::after {
     content: ')';
 }
 
 .atomicity .entry.expanded .expand::before {
+	content: 'Hide';
+}
+
+.atomicity .entry.expanded .expand:not(:empty)::before {
 	content: 'Hide (';
 }
 
