@@ -1,4 +1,4 @@
-#!/usr/bin/perl -wT
+#!/usr/bin/perl -wT 
 
 use strict;
 use CGI;
@@ -6,20 +6,20 @@ use CGI::Carp qw(fatalsToBrowser);
 use File::Basename;
 use Data::Dumper;
 
+my $cgi = new CGI();
+print $cgi->header(); # for debugging
+print $cgi->param('uploaded_file');
+print $cgi->uploadInfo($cgi->param('uploaded_file'));
+
 my $upload_dir = 'xml';
-my $query = new CGI();
-print $query->header();
+my $filename = 'test.xml'; # temporary
 
-my @files = $query->param;
+open (DESTINATION_FILE, ">$upload_dir/$filename") or die "$!";
+binmode DESTINATION_FILE;
 
-my $filename = 'test.xml';
-
-open (UPLOADFILE, ">$upload_dir/$filename") or die "$!";
-binmode UPLOADFILE;
-
-my $upload_filehandle = $query->upload('data');
-while (<$upload_filehandle>) {
-	 print UPLOADFILE;
+my $source_file_handle = $cgi->upload('meta.xml');
+while (<$source_file_handle>) {
+	 print DESTINATION_FILE;
 }
 
 close UPLOADFILE;
