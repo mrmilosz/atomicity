@@ -1,6 +1,13 @@
 $(document).ready(function () {
 
     /*
+     * Configuration variables (technically these should be read from elsewhere!)
+     */
+    var config = {
+        xmlDirectory: 'xml'
+    };
+
+    /*
      * Event handlers
      */
 
@@ -86,7 +93,7 @@ $(document).ready(function () {
         formData.append($context.find('.output-container .controls .filename').val(), blob.data);
 
         $.ajax({
-            url: 'upload.pl',
+            url: $(this).data('script'),
             type: 'POST',
             processData: false,
             contentType: false,
@@ -108,7 +115,9 @@ $(document).ready(function () {
     });
 
     $('.output-container .controls button.upload').on('click', function () {
-        $(this).parents('.context').find('.hidden-container input.upload-impl').trigger('click');
+        if (confirm('Really upload new file and overwrite current XML?')) {
+            $(this).parents('.context').find('.hidden-container input.upload-impl').trigger('click');
+        }
     });
 
     $('.hidden-container input.upload-impl').on('change', function (event) {
@@ -134,9 +143,20 @@ $(document).ready(function () {
 
     $('.context').each(function (_, context) {
         var $context = $(context);
-        $context.find('.output-container .controls .filename').val($context.find('.output-container .controls .filename').val()); // Fixes a Chrome quirk
-        $context.find('.input-container .default').trigger('click');
-        populateXmlFromFields($context);
+        var filename = $context.find('.output-container .controls .filename').val();
+        $context.find('.output-container .controls .filename').val(filename); // Fixes a Chrome quirk
+
+        $.ajax({
+            url: config.xmlDirectory + '/' + filename,
+            dataType: 'text'
+        }).done(function(xmlText) {
+            xmlText = xmlText.replace(/^.*?\?>\n?/, ''); // look into cleaner ways of doing this (Blob?)
+            populateFieldsFromXml(xmlText, $context);
+        }).fail(function() {
+            $context.find('.input-container .default').trigger('click');
+        }).always(function() {
+            populateXmlFromFields($context);
+        });
     });
 
     $('.context-switch').trigger('click');
@@ -294,6 +314,9 @@ $(document).ready(function () {
                             $input.val(fieldValue);
                         }
                     }
+
+                    updateExpandButtonText($input);
+                    checkForEmptiness($input);
                 }
             });
         })($xmlDoc.find('feed > *'), $context.find('.input-container .feed.section-group'));
