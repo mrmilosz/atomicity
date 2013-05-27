@@ -83,7 +83,7 @@ $(document).ready(function () {
         blobBuilder.append($context.find('.output-container .view').text());
         var blob = blobBuilder.getBlob('data:application/xml;charset=' + document.characterSet);
         var formData = new FormData();
-        formData.append($context.find('.output-container .controls .filename').val(), blob);
+        formData.append($context.find('.output-container .controls .filename').val(), blob.data);
 
         $.ajax({
             url: 'upload.pl',

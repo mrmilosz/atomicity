@@ -1,25 +1,26 @@
 #!/usr/bin/perl -wT 
 
 use strict;
-use CGI;
+use CGI qw(standard -utf8);
 use CGI::Carp qw(fatalsToBrowser);
-use File::Basename;
 use Data::Dumper;
 
 my $cgi = new CGI();
-print $cgi->header(); # for debugging
-print $cgi->param('uploaded_file');
-print $cgi->uploadInfo($cgi->param('uploaded_file'));
-
 my $upload_dir = 'xml';
-my $filename = 'test.xml'; # temporary
+my %filenames = ();
 
-open (DESTINATION_FILE, ">$upload_dir/$filename") or die "$!";
-binmode DESTINATION_FILE;
+print $cgi->header(); # for debugging
 
-my $source_file_handle = $cgi->upload('meta.xml');
-while (<$source_file_handle>) {
-	 print DESTINATION_FILE;
+for my $filename ($cgi->param()) {
+	if ($filename =~ /^([-\@\w.]+)$/) {
+		$filename = $1;
+	}
+	else {
+		die "Bad filename";
+	}
+
+	open (DESTINATION_FILE, ">$upload_dir/$filename") or die "$!";
+	binmode DESTINATION_FILE;
+	print DESTINATION_FILE $cgi->param($filename);
+	close DESTINATION_FILE;
 }
-
-close UPLOADFILE;
