@@ -3,13 +3,26 @@
 use strict;
 use CGI qw(standard -utf8);
 use CGI::Carp qw(fatalsToBrowser);
-use Data::Dumper;
 
 my $cgi = new CGI();
-my $upload_dir = 'xml';
-my %filenames = ();
+print $cgi->header();
 
-print $cgi->header(); # for debugging
+my $upload_dir = 'xml';
+
+my $destination_dir = $cgi->url_param('destination');
+if (defined $destination_dir) {
+	if ($destination_dir =~ /^([-\/\@\w.]+)$/) {
+		$upload_dir = $1;
+	}
+	else {
+		die "Bad filename";
+	}
+}
+
+use Data::Dumper;
+print Dumper($upload_dir);
+
+my %filenames = ();
 
 for my $filename ($cgi->param()) {
 	if ($filename =~ /^([-\@\w.]+)$/) {
