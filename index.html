@@ -101,9 +101,12 @@
 									<div class="table-cell"><button class="field delete"></button></div>
 								</div>
 
-								<label class="section table-row non-empty invalid" data-name="id title">
+								<label class="section table-row non-empty invalid" data-name="title">
 									<div class="label table-cell">Title</div>
 									<div class="greedy table-cell"><textarea class="stretchy resizable field input " type="text"></textarea></div>
+								</label>
+								<label class="hidden section self-incrementing" data-name="id">
+									<div class="greedy table-cell"><input type="hidden" class="input"/></div>
 								</label>
 								<label class="tag multi select section table-row" data-name="category" data-attr="term" data-choices="title;other">
 									<div class="label table-cell">Inherits</div>
