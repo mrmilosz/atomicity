@@ -19,11 +19,6 @@ if (defined $destination_dir) {
 	}
 }
 
-use Data::Dumper;
-print Dumper($upload_dir);
-
-my %filenames = ();
-
 for my $filename ($cgi->param()) {
 	if ($filename =~ /^([-\@\w.]+)$/) {
 		$filename = $1;
@@ -32,7 +27,10 @@ for my $filename ($cgi->param()) {
 		die "Bad filename";
 	}
 
-	open (DESTINATION_FILE, ">$upload_dir/$filename") or die "$!";
+	my $upload_path = "$upload_dir/$filename";
+	print $upload_path;
+
+	open (DESTINATION_FILE, ">$upload_path") or die "$!";
 	binmode DESTINATION_FILE;
 	print DESTINATION_FILE $cgi->param($filename);
 	close DESTINATION_FILE;
