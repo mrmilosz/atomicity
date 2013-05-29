@@ -86,6 +86,10 @@ $(document).ready(function () {
 
     $('.output-container .controls button.save').on('click', function () {
         var $context = $(this).parents('.context');
+        if ($context.find(".input-container .section.invalid").length > 0) {
+            alert("Can't save while there are errors. correct fields marked in red.");
+            return;
+        }
         var blobBuilder = new BlobBuilder();
         blobBuilder.append($context.find('.output-container .view').text());
         var blob = blobBuilder.getBlob('data:application/xml;charset=' + document.characterSet);
