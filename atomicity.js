@@ -215,7 +215,7 @@ $(document).ready(function () {
                 if($section.hasClass('timestamp')) {
                     var currentTime=moment(fieldValue);
                     fieldValue=currentTime!==null&&currentTime.isValid()
-                        ?currentTime.utc().format('YYYY-MM-DDThh:mm:ss\\Z')
+                        ?currentTime.utc().format('YYYY-MM-DDTHH:mm:ss\\Z')
                         :'';
                 }
 
