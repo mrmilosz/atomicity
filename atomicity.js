@@ -4,7 +4,8 @@ $(document).ready(function () {
     * Configuration variables (technically these should be read from elsewhere!)
     */
     var config={
-        xmlDirectory: 'xml'
+        xmlDirectory: 'xml',
+        atomNamespace: 'http://www.w3.org/2005/Atom'
     };
 
     /*
@@ -187,7 +188,8 @@ $(document).ready(function () {
     }
 
     function populateXmlFromFields($context,validate) {
-        var $root=$('<feed xmlns="http://www.w3.org/2005/Atom">');
+        var root = document.createElementNS(config.atomNamespace, 'feed');
+        var $root=$(root);
         var $container=$root;
 
         $.each($context.find('.input-container .section-group'),function (_,sectionGroup) {
@@ -197,7 +199,7 @@ $(document).ready(function () {
                 if($sectionGroup.hasClass('add')) {
                     return true;
                 }
-                $root.append($container=$('<entry>'));
+                $root.append($container=$(document.createElementNS(config.atomNamespace, 'entry')));
             }
 
             $.each($(this).find('.section'),function (_,section) {
@@ -213,7 +215,7 @@ $(document).ready(function () {
                 if($section.hasClass('timestamp')) {
                     var currentTime=moment(fieldValue);
                     fieldValue=currentTime!==null&&currentTime.isValid()
-                        ?currentTime.utc().format('YYYY-MM-DDThh:mm:ss\\Z')
+                        ?currentTime.utc().format('YYYY-MM-DDTHH:mm:ss\\Z')
                         :'';
                 }
 
@@ -231,21 +233,21 @@ $(document).ready(function () {
                     if($section.hasClass('multi')) {
                         if(attr!==undefined) {
                             var $nodes=$($.map(fieldValue.split(/\s*,\s*/),function (value) {
-                                return value.length>0?$('<'+fieldName+'/>').attr(attr,value).get(0):null;
+                                return value.length>0?$(document.createElementNS(config.atomNamespace, fieldName)).attr(attr,value).get(0):null;
                             }));
                         }
                         else {
                             var $nodes=$($.map(fieldValue.split(/\s*,\s*/),function (value) {
-                                return value.length>0?$('<'+fieldName+'/>').text(value).get(0):null;
+                                return value.length>0?$(document.createElementNS(config.atomNamespace, fieldName)).text(value).get(0):null;
                             }));
                         }
                     }
                     else {
                         if(attr!==undefined) {
-                            var $nodes=$('<'+fieldName+'>').attr(attr,fieldValue);
+                            var $nodes=$(document.createElementNS(config.atomNamespace, fieldName)).attr(attr,fieldValue);
                         }
                         else {
-                            var $nodes=$('<'+fieldName+'>').text(fieldValue);
+                            var $nodes=$(document.createElementNS(config.atomNamespace, fieldName)).text(fieldValue);
                         }
                     }
 
@@ -257,12 +259,15 @@ $(document).ready(function () {
                 });
             });
         });
-
-        var xmlBodyText=new XMLSerializer().serializeToString($root.get(0));
-        var xmlHeaderText='<?xml version="1.0" encoding="'+document.characterSet+'" ?>'
-        $context.find('.output-container .view').removeClass('prettyprinted').text(selfCloseTags(vkbeautify.xml(fixHtmlTags(xmlHeaderText+xmlBodyText))));
-
+        var xmlBodyText=new XMLSerializer().serializeToString(root);
+	var xmlHeaderText='<?xml version="1.0" encoding="'+document.characterSet+'" ?>';
+        var xmlText = fixXmlns(selfCloseTags(vkbeautify.xml(xmlHeaderText + xmlBodyText)));
+        $context.find('.output-container .view').removeClass('prettyprinted').text(xmlText);
         prettyPrint();
+    }
+
+    function fixXmlns(xmlText) {
+       return xmlText.replace(/<feed>/, '<feed xmlns="' + config.atomNamespace + '">');
     }
 
     function populateFieldsFromXml(xml,$context) {
@@ -421,10 +426,6 @@ $(document).ready(function () {
 
     function selfCloseTags(xmlString) {
         return xmlString.replace(/><\/.+?>/g,' />');
-    }
-
-    function fixHtmlTags(xmlString) {
-        return xmlString.replace(/(<link[^>]*\s*>)/g,'$1</link>');
     }
 
     function commaSeparatedListToArray(list) {
