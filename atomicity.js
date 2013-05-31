@@ -362,11 +362,17 @@ $(document).ready(function () {
                                     var parts=choices.split(';'),
                                         attribute=parts[0],
                                         source=parts[1];
-
-                                    if(source==='other') {
-                                        var $otherSections=$('.input-container .entry.section-group').not($section.parents('.section-group')).find('.section[data-name~="'+attribute+'"]');
+										context=parts[2];
+                                    if(source==='other-section') {
+										var $otherSections;
+										if(context === undefined){
+											$otherSections=$section.parents('.context').find('.input-container .entry.section-group').not($section.parents('.section-group')).find('.section[data-name~="'+attribute+'"]');
+										}
+										else{
+											$otherSections=$('.context.'+ context +' .input-container .entry.section-group').not($section.parents('.section-group')).find('.section[data-name~="'+attribute+'"]');
+										}
                                         choices=$.map($otherSections,function (otherSection) {
-                                            return $(otherSection).find('.input').val();
+											return $(otherSection).find('.input').val();
                                         });
                                     }
 
