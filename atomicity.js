@@ -259,12 +259,10 @@ $(document).ready(function () {
                 });
             });
         });
-	console.log("hi");
         var xmlBodyText=new XMLSerializer().serializeToString(root);
 	var xmlHeaderText='<?xml version="1.0" encoding="'+document.characterSet+'" ?>';
         var xmlText = fixXmlns(selfCloseTags(vkbeautify.xml(xmlHeaderText + xmlBodyText)));
         $context.find('.output-container .view').removeClass('prettyprinted').text(xmlText);
-	console.log(xmlText);
         prettyPrint();
     }
 
