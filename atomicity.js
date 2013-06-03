@@ -39,6 +39,7 @@ $(document).ready(function () {
             populateXmlFromFields($context);
             updateExpandButtonText($this);
             checkForEmptiness($this);
+			updateUpdateFields($this);
         },0);
     });
 
@@ -472,4 +473,9 @@ $(document).ready(function () {
             }
         }
     }
+	function updateUpdateFields($input) {
+		$input.parents('.context').find('.section[data-name~="updated"]').first().find('.input').val(prettyTime());
+		$input.parents('.section-group').find('.section[data-name~="updated"]').first().find('.input').val(prettyTime());
+		
+	}
 });
