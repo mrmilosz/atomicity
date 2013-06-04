@@ -1,5 +1,5 @@
 $(document).ready(function () {
-
+	var loaded = false;
     /*
     * Configuration variables (technically these should be read from elsewhere!)
     */
@@ -39,7 +39,11 @@ $(document).ready(function () {
             populateXmlFromFields($context);
             updateExpandButtonText($this);
             checkForEmptiness($this);
-			updateUpdateFields($this);
+			
+			if(loaded){
+				updateUpdateFields($this);
+			}
+			ensureCategoriesExist($this);
         },0);
     });
 
@@ -88,10 +92,14 @@ $(document).ready(function () {
 
     $('.output-container .controls button.save').on('click',function () {
         var $context=$(this).parents('.context');
-        if($context.find(".input-container .section.invalid").length>0) {
+        if($context.find(".input-container .section.invalid-empty").length>0
+			||$context.find(".input-container .section.invalid-no-category").length>0) {
             alert("Can't save while there are errors. correct fields marked in red.");
             return;
         }
+		if(!confirm('Are you sure you want to save?')){
+			return;
+		}
         var blobBuilder=new BlobBuilder();
         blobBuilder.append($context.find('.output-container .view').text());
         var blob=blobBuilder.getBlob('data:application/xml;charset='+document.characterSet);
@@ -109,7 +117,8 @@ $(document).ready(function () {
 
     $('.output-container .controls button.download').on('click',function () {
         var $context=$(this).parents('.context');
-        if($context.find(".input-container .section.invalid").length>0) {
+        if($context.find(".input-container .section.invalid-empty").length>0
+			||$context.find(".input-container .section.invalid-no-category").length>0) {
             alert("Can't save while there are errors. correct fields marked in red.");
             return;
         }
@@ -162,6 +171,7 @@ $(document).ready(function () {
             $context.find('.input-container .default').trigger('click');
         }).always(function () {
             populateXmlFromFields($context);
+			loaded = true;
         });
     });
 
@@ -466,10 +476,10 @@ $(document).ready(function () {
     function checkForEmptiness($input) {
         if($input.parents('.section').hasClass('non-empty')) {
             if(/^\s*$/.test($input.val())) {
-                $input.parents('.section').addClass('invalid');
+                $input.parents('.section').addClass('invalid-empty');
             }
             else {
-                $input.parents('.section').removeClass('invalid');
+                $input.parents('.section').removeClass('invalid-empty');
             }
         }
     }
@@ -477,5 +487,26 @@ $(document).ready(function () {
 		$input.parents('.context').find('.section[data-name~="updated"]').first().find('.input').val(prettyTime());
 		$input.parents('.section-group').find('.section[data-name~="updated"]').first().find('.input').val(prettyTime());
 		
+	}
+	function ensureCategoriesExist($input) {
+		//here will be a function to for the category field in the content context to only
+		//have entries from titles from the meta side.
+		if($input.parents('.section').hasClass('check-category')){
+			$input.parents('.section').removeClass('invalid-no-category');
+			var $categoryTitles = new Array();
+			$(".context.meta .input-container .category-title").each(function(categoryTitle) {
+				$categoryTitles.push($(this).find('.input').val());
+			});
+			$.each($input.val().split(','), function($_, $potentialCategory) {
+				if($potentialCategory !="" && $.inArray($potentialCategory, $categoryTitles) === -1){
+					$input.parents('.section').addClass('invalid-no-category');
+				}
+			});
+			
+		}
+		
+		
+		 
+
 	}
 });
