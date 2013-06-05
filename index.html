@@ -40,7 +40,6 @@
 			<div class="context-switch-button-container">
 				<button class="context-switch field"></button>
 			</div>
-
 			<div class="meta context">
 
 				<form class="input-container">
@@ -56,7 +55,6 @@
 								<input class="input" type="hidden" value="Title" />
 							</label>
 						</div>
-
 						<div class="section-group feed table-row-group">
 							<label class="timestamp section table-row" data-name="updated">
 								<div class="label table-cell">Updated</div>
@@ -81,7 +79,7 @@
 							<div class="greedy table-cell"><input type="text" class="stretchy filename field" value="meta.xml" /></div>
 							<!--div class="table-cell"><button class="download field">Download</button></div>
 							<div class="table-cell"><button class="upload field">Upload</button></div-->
-							<div class="table-cell"><button class="save field" data-script="upload.pl">Save</button></div>
+							<div class="table-cell"><button class="save field" data-script="upload.pl">Stage</button></div>
 							<div class="table-cell"><button class="save field" data-script="upload.pl?destination=/tmp">Deploy</button></div>
 						</div>
 					</div>
@@ -174,7 +172,7 @@
 							<div class="greedy table-cell"><input type="text" class="stretchy filename field" value="content.xml" /></div>
 							<!--div class="table-cell"><button class="download field">Download</button></div>
 							<div class="table-cell"><button class="upload field">Upload</button></div-->
-							<div class="table-cell"><button class="save field" data-script="upload.pl">Save</button></div>
+							<div class="table-cell"><button class="save field" data-script="upload.pl">Stage</button></div>
 							<div class="table-cell"><button class="save field" data-script="upload.pl?destination=/tmp">Deploy</button></div>
 						</div>
 					</div>
@@ -201,7 +199,7 @@
 									<div class="label table-cell">Title</div>
 									<div class="greedy table-cell"><textarea class="stretchy resizable field input title" type="text"></textarea></div>
 								</label>
-                                <label class="section table-row" data-name="summary">
+                                <label class="section table-row non-empty invalid-empty" data-name="summary">
 									<div class="label table-cell">Summary</div>
 									<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
 								</label>

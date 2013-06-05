@@ -39,7 +39,6 @@ $(document).ready(function () {
             populateXmlFromFields($context);
             updateExpandButtonText($this);
             checkForEmptiness($this);
-			
 			if(loaded){
 				updateUpdateFields($this);
 			}
@@ -232,7 +231,17 @@ $(document).ready(function () {
 
                 if($section.hasClass("self-incrementing")) {
                     if($input.val()==="") {
-                        $input.val($context.find(".input-container .self-incrementing").length);
+						$otherIDs = $context.find(".input-container .self-incrementing .input");
+						if($otherIDs.length === 1){
+							$input.val(1);
+						}
+						else{
+							$maxID = 0;
+							$choices=$.map($otherIDs,function (otherID) {
+											return $(otherID).val();
+                                        });
+							$input.val(Math.max.apply(null, $choices));
+						}
                         fieldValue=$input.val();
                     }
                 }
