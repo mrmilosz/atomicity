@@ -85,7 +85,6 @@ $(document).ready(function () {
         var $context=$(this).parents('.context');
         var $entry=$(this).parents('.section-group');
         var alreadyExpanded=$entry.hasClass('expanded');
-        $context.find('.input-container .section-group').removeClass('expanded');
         $entry[(alreadyExpanded?'remove':'add')+'Class']('expanded');
     });
 
@@ -220,15 +219,21 @@ $(document).ready(function () {
                     attr=$section.data('attr'),
                     definingAttr=$section.data('defining_attr'),
                     definingAttrValue=$section.data('defining_attr_value');
-
-
                 if($section.hasClass('timestamp')) {
                     var currentTime=moment(fieldValue);
                     fieldValue=currentTime!==null&&currentTime.isValid()
                         ?currentTime.utc().format('YYYY-MM-DDTHH:mm:ss\\Z')
                         :'';
                 }
-
+				if($input.is(':checkbox')){
+					if($input.is(':checked')){
+						$input.val(true);
+					}
+					else{
+						$input.val(false);
+					}
+					fieldValue=$input.val();
+				}
                 if($section.hasClass("self-incrementing")) {
                     if($input.val()==="") {
 						$otherIDs = $context.find(".input-container .self-incrementing .input");

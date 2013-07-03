@@ -116,7 +116,9 @@ body {
 .atomicity .entry .expand::before {
 	content: 'Expand';
 }
-
+.atomicity .entry{
+	overflow: hidden;
+}
 .atomicity .entry .expand:not(:empty)::before {
 	content: 'Expand (';
 }
@@ -136,6 +138,7 @@ body {
 .atomicity .entry.expanded .table-row.section {
 	display: table-row;
 }
+
 .atomicity .section.invalid-no-category .input,
 .atomicity .section.invalid-no-category .input.field ~ .tagit,
 .atomicity .section.invalid-empty .input,
