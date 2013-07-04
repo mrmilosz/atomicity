@@ -323,7 +323,7 @@ $(document).ready(function () {
                             return true;
                         }
                     });
-
+					
                     var attribute=$section.data('attr'),
                         $input=$section.find('.input');
 
@@ -352,6 +352,17 @@ $(document).ready(function () {
                                 $input.tagit('createTag',term);
                             });
                         }
+						else if($input.is(':checkbox')){
+							if(fieldValue === 'true'){
+								$input.val(true);
+								$input.prop('checked', true);
+							}
+							else{
+								$input.val(false);
+								$input.prop('checked', false);
+							}
+						fieldValue=$input.val();
+						}
                         else {
                             $input.val(fieldValue);
                         }
