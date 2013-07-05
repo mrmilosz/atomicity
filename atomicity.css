@@ -99,6 +99,10 @@ body {
 	width: 100%;
 }
 
+.atomicity .parenty.table-cell {
+   position: relative;
+}
+
 .atomicity .hidden {
 	display: none;
 }
@@ -113,12 +117,21 @@ body {
 	box-shadow: none;
 }
 
+.atomicity .entry .expand {
+   overflow: hidden;
+   position: absolute;
+   width: auto;
+   top: 0;
+   right: 0;
+   bottom: 0;
+   left: 0;
+   text-overflow: ellipsis;
+}
+
 .atomicity .entry .expand::before {
 	content: 'Expand';
 }
-.atomicity .entry{
-	overflow: hidden;
-}
+
 .atomicity .entry .expand:not(:empty)::before {
 	content: 'Expand (';
 }

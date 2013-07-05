@@ -1,4 +1,47 @@
 $(document).ready(function () {
+
+   // START CONTEXT SWITCH CRAP
+   function setContextFromHash() {
+      var hashValue = window.location.hash.replace(/^#/, '');
+      if (hashValue === 'meta' || hashValue === 'content') {
+         switchContext(hashValue);      
+      }
+      else {
+         window.location.hash = 'meta';
+      }
+   }
+   $(window).on('hashchange', function() {
+      setContextFromHash();
+   });
+   setContextFromHash();
+
+   // this function is a total mess. may god help you. -Milosz
+   function switchContext(contextName) {
+      var $button=$('.context-switch');
+      var $allContexts=$('.context');
+
+      if (contextName == 'meta') {
+         $allContexts.filter('.content').removeClass('visible');
+         $button.removeClass('content');
+
+         $allContexts.filter('.meta').addClass('visible');
+         $button.addClass('meta');
+      }
+      else if (contextName == 'content') {
+         $allContexts.filter('.meta').removeClass('visible');
+         $button.removeClass('meta');
+
+         $allContexts.filter('.content').addClass('visible');
+         $button.addClass('content');
+      }
+   }
+
+   $('.context-switch').on('click',function () {
+       window.location.hash = getContextClassName($(this)) === 'meta' ? 'content' : 'meta';
+   });
+   // END CONTEXT SWITCH CRAP
+
+
 	var loaded = false;
     /*
     * Configuration variables (technically these should be read from elsewhere!)
@@ -11,26 +54,6 @@ $(document).ready(function () {
     /*
     * Event handlers
     */
-
-    $('.context-switch').on('click',function () {
-        var $button=$(this);
-        var currentContextClassName=getContextClassName($button);
-        var $allContexts=$('.context');
-
-        if(currentContextClassName===null) {
-            var $nextContext=$allContexts.first();
-        }
-        else {
-            var $currentContext=$allContexts.filter('.'+currentContextClassName);
-            var $nextContext=$($allContexts.get($currentContext.index()%$allContexts.length));
-            $button.removeClass(currentContextClassName)
-            $currentContext.removeClass('visible');
-        }
-
-        var nextContextClassName=getContextClassName($nextContext);
-        $button.addClass(nextContextClassName);
-        $nextContext.addClass('visible');
-    });
 
     $('.input-container').on('keydown change','.input',function () {
         var $this=$(this);
@@ -173,7 +196,6 @@ $(document).ready(function () {
         });
     });
 
-    $('.context-switch').trigger('click');
     $('.input-container .input').first().focus();
 
     /*
