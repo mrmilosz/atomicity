@@ -3,244 +3,27 @@
 	<head>
 		<title>Atomicity</title>
 		<meta charset="utf-8" />
-
-		<!-- http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css -->
-		<link rel="stylesheet" type="text/css" href="jquery-ui.css" />
-		<!-- http://github.com/aehlke/tag-it/zipball/master -->
-		<link rel="stylesheet" type="text/css" href="aehlke-tag-it-d416408/css/jquery.tagit.css" />
-		<!-- https://google-code-prettify.googlecode.com/files/prettify-small-4-Mar-2013.tar.bz2 -->
-		<link rel="stylesheet" type="text/css" href="google-code-prettify/prettify.css" />
-
-		<link rel="stylesheet" type="text/css" href="atomicity.css" />
-
 		<!-- http://code.jquery.com/jquery-1.9.1.min.js -->
 		<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
 		<!-- http://code.jquery.com/ui/1.10.3/jquery-ui.js -->
 		<script type="text/javascript" src="jquery-ui.js"></script>
-		<!-- https://vkbeautify.googlecode.com/files/vkbeautify.0.99.00.beta.js -->
-		<script type="text/javascript" src="vkbeautify.0.99.00.beta.js"></script>
-		<!-- https://google-code-prettify.googlecode.com/files/prettify-small-4-Mar-2013.tar.bz2 -->
-		<script type="text/javascript" src="google-code-prettify/prettify.js"></script>
-		<!-- https://raw.github.com/eligrey/Blob.js/master/Blob.js -->
-		<script type="text/javascript" src="Blob.js"></script>
-		<!-- https://raw.github.com/eligrey/Blob.js/master/BlobBuilder.min.js -->
-		<script type="text/javascript" src="BlobBuilder.min.js"></script>
-		<!-- https://raw.github.com/eligrey/FileSaver.js/master/FileSaver.js -->
-		<script type="text/javascript" src="FileSaver.js"></script>
-		<!-- https://raw.github.com/timrwood/moment/2.0.0/min/moment.min.js -->
-		<script type="text/javascript" src="moment.min.js"></script>
-		<!-- http://github.com/aehlke/tag-it/zipball/master -->
-		<script type="text/javascript" src="aehlke-tag-it-d416408/js/tag-it.min.js"></script>
-
-		<script type="text/javascript" src="atomicity.js"></script>
-	</head>
+		<!-- http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css -->
+		<link rel="stylesheet" type="text/css" href="jquery-ui.css" />
+		
+		<link rel="stylesheet" type="text/css" href="atomicity.css" />
+		<script type="text/javascript" src="landing-page.js"></script>
+		</head>
 	<body>
-		<div class="atomicity">
-
-			<div class="context-switch-button-container">
-				<button class="context-switch field"></button>
+		<div class="header">
+			<h1>Atomicity</h1>
+		</div>
+		<div class="atomicity landing-page">
+			<div class="selection-section" data-dest="meta">
+				<label><button class="field selector">Manage RSS Categories</button></label>
 			</div>
-			<div class="meta context">
-
-				<form class="input-container">
-					<div class="table">
-						<div class="hidden section-group feed">
-							<label class="section" data-name="id">
-								<input class="input" type="hidden" value="ID" />
-							</label>
-						</div>
-
-						<div class="hidden section-group feed">
-							<label class="section" data-name="title">
-								<input class="input" type="hidden" value="Title" />
-							</label>
-						</div>
-						<div class="section-group feed table-row-group">
-							<label class="timestamp section table-row" data-name="updated">
-								<div class="label table-cell">Updated</div>
-								<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
-								<div class="table-cell"><button class="field default">Now</button></div>
-							</label>
-						</div>
-
-						<div class="section-group add entry table-row-group">
-							<div class="placeholder table-row">
-								<div class="label table-cell">Entry <span class="entry-counter"></span></div>
-								<div class="greedy table-cell"><button class="field add"></button></div>
-							</div>
-						</div>
-					</div>
-
-				</form>
-
-				<form class="output-container">
-					<div class="controls table">
-						<div class="table-row">
-							<div class="greedy table-cell"><input type="text" class="stretchy filename field" value="meta.xml" /></div>
-							<!--div class="table-cell"><button class="download field">Download</button></div>
-							<div class="table-cell"><button class="upload field">Upload</button></div-->
-							<div class="table-cell"><button class="save field" data-script="upload.pl">Stage</button></div>
-							<div class="table-cell"><button class="save field" data-script="upload.pl?destination=/tmp">Deploy</button></div>
-						</div>
-					</div>
-					<pre name="display" class="view resizable field prettyprint"></pre>
-				</form>
-
-				<div class="hidden-container">
-					<input type="file" class="upload-impl" />
-
-					<div class="templates">
-						<div class="entry">
-
-							<div class="section-group entry table-row-group">
-								<div class="placeholder table-row">
-									<div class="label table-cell">Entry <span class="entry-counter"></span></div>
-									<div class="greedy parenty table-cell"><button class="field stretchy expand"></button></div>
-									<div class="table-cell"><button class="field delete"></button></div>
-								</div>
-
-								<label class="section table-row non-empty invalid-empty category-title" data-name="title">
-									<div class="label table-cell">Title</div>
-									<div class="greedy table-cell"><textarea class="stretchy resizable field input " type="text"></textarea></div>
-								</label>
-								<label class="hidden section self-incrementing" data-name="id">
-									<div class="greedy table-cell"><input type="hidden" class="input"/></div>
-								</label>
-								<label class="tag multi select section table-row check-category" data-name="category" data-attr="term" data-choices="title;other-section" data-defining_attr="scheme" data-defining_attr_value="inherits">
-									<div class="label table-cell">Inherits</div>
-									<div class="greedy table-cell"><input class="stretchy resizable field input" type="text" /></div>
-								</label>
-								<label class="select section table-row" data-name="category" data-attr="term" data-choices="title;other-section" data-defining_attr="scheme" data-defining_attr_value="force subscription">
-									<div class="label table-cell">Force Subscription</div>
-									<div class="greedy table-cell"><input class="stretchy resizable field input" type="checkbox" /></div>
-								</label>
-								<label class="tag select section table-row non-empty invalid-empty" data-name="content" data-choices='["Admin", "Nable Admin", "Product Admin", "SO Admin", "SO Tech"]'>
-									<div class="label table-cell">Account Types</div>
-									<div class="greedy table-cell"><input class="stretchy resizable field input" type="text" /></div>
-								</label>
-								<label class="tag section table-row non-empty invalid-empty" data-name="summary">
-									<div class="label table-cell">Versions</div>
-									<div class="greedy table-cell"><input class="stretchy resizable field input" type="text" /></div>
-								</label>
-								<label class="timestamp section table-row" data-name="updated">
-									<div class="label table-cell">Updated</div>
-									<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
-									<div class="table-cell"><button class="field default">Now</button></div>
-								</label>
-							</div>
-
-						</div>
-					</div>
-
-				</div>
-
+			<div class="selection-section" data-dest="content">
+				<label><button class="field select0r">Manage RSS Updates</button></label>
 			</div>
-
-			<div class="content context">
-
-				<form class="input-container">
-					<div class="table">
-						<div class="hidden section-group feed">
-							<label class="section" data-name="id">
-								<input class="input" type="hidden" value="ID" />
-							</label>
-						</div>
-
-						<div class="hidden section-group feed">
-							<label class="section" data-name="title">
-								<input class="input" type="hidden" value="Title" />
-							</label>
-						</div>
-
-						<div class="section-group feed table-row-group">
-							<label class="timestamp section table-row" data-name="updated">
-								<div class="label table-cell">Updated</div>
-								<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
-								<div class="table-cell"><button class="field default">Now</button></div>
-							</label>
-						</div>
-
-						<div class="section-group add entry table-row-group">
-							<div class="placeholder table-row">
-								<div class="label table-cell">Entry <span class="entry-counter"></span></div>
-								<div class="greedy table-cell"><button class="field add"></button></div>
-							</div>
-						</div>
-					</div>
-
-				</form>
-
-				<form class="output-container">
-					<div class="controls table">
-						<div class="table-row">
-							<div class="greedy table-cell"><input type="text" class="stretchy filename field" value="content.xml" /></div>
-							<!--div class="table-cell"><button class="download field">Download</button></div>
-							<div class="table-cell"><button class="upload field">Upload</button></div-->
-							<div class="table-cell"><button class="save field" data-script="upload.pl">Stage</button></div>
-							<div class="table-cell"><button class="save field" data-script="upload.pl?destination=/tmp">Deploy</button></div>
-						</div>
-					</div>
-					<pre name="display" class="view resizable field prettyprint"></pre>
-				</form>
-
-				<div class="hidden-container">
-					<input type="file" class="upload-impl" />
-					<div class="templates">
-
-						<div class="entry">
-							<div class="section-group entry table-row-group">
-
-								<div class="placeholder table-row">
-									<div class="label table-cell">Entry <span class="entry-counter"></span></div>
-									<div class="greedy parenty table-cell"><button class="field stretchy expand"></button></div>
-									<div class="table-cell"><button class="field delete"></button></div>
-								</div>
-								
-								<label class="hidden section self-incrementing" data-name="id">
-									<div class="greedy table-cell"><input type="hidden" class="input"/></div>
-								</label>
-								<label class="section table-row unique non-empty invalid-empty" data-name="title">
-									<div class="label table-cell">Title</div>
-									<div class="greedy table-cell"><textarea class="stretchy resizable field input title" type="text"></textarea></div>
-								</label>
-                                <label class="section table-row non-empty invalid-empty" data-name="summary">
-									<div class="label table-cell">Summary</div>
-									<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
-								</label>
-								<label class="section table-row non-empty invalid-empty" data-name="content">
-									<div class="label table-cell">Content</div>
-									<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
-								</label>
-								<label class="section table-row" data-name="link" data-attr="href">
-									<div class="label table-cell">Link</div>
-									<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
-								</label>
-								<label class="tag multi section table-row non-empty check-category select invalid-empty" data-name="category" data-attr="term" data-choices="title;other-section;meta" data-defining_attr="scheme">
-									<div class="label table-cell">Category</div>
-									<div class="greedy table-cell"><input class="stretchy resizable field input" type="text" /></div>
-								</label>
-								<label class="tag multi section table-row non-empty invalid-empty" data-name="category" data-attr="term" data-defining_attr="scheme" data-defining_attr_value="N-central versions">
-									<div class="label table-cell">Versions</div>
-									<div class="greedy table-cell"><input class="stretchy resizable field input" type="text" /></div>
-								</label>
-								<label class="timestamp section table-row" data-name="updated">
-									<div class="label table-cell">Updated</div>
-									<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
-									<div class="table-cell"><button class="field default">Now</button></div>
-								</label>
-								<label class="timestamp section table-row" data-name="published">
-									<div class="label table-cell">Published</div>
-									<div class="greedy table-cell"><textarea class="stretchy resizable field input" type="text"></textarea></div>
-									<div class="table-cell"><button class="field default">Now</button></div>
-								</label>
-							</div>
-						</div>
-
-					</div>
-				</div>
-
-			</div>
-
 		</div>
 	</body>
 </html>
