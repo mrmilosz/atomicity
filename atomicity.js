@@ -259,6 +259,7 @@ $(document).ready(function () {
                 if($section.hasClass("self-incrementing")) {
                     if($input.val()==="") {
 						$otherIDs = $context.find(".input-container .self-incrementing .input");
+						window.alert($otherIDs.length);
 						if($otherIDs.length === 1){
 							$input.val(1);
 						}
@@ -267,7 +268,8 @@ $(document).ready(function () {
 							$choices=$.map($otherIDs,function (otherID) {
 											return $(otherID).val();
                                         });
-							$input.val(Math.max.apply(null, $choices));
+							window.alert($choices);
+							$input.val(Math.max.apply(null, $choices)+1);
 						}
                         fieldValue=$input.val();
                     }
