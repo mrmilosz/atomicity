@@ -69,6 +69,34 @@ $(document).ready(function () {
         },0);
     });
 
+    $('.filter-bar').on('keydown change','.input',function () {
+        var $this=$(this);
+		var $context = $this.parents('.context');
+		var $filteredCategories = $.grep($this.val().split(/\s*,\s*/), function(bar) { return bar !== '' });
+		$.each($context.find('.input-container .entry.section-group'),function (_,entry) {
+			var $entry = $(entry);
+			var $categories = $entry.find('.category-filter .input').val();
+			if($filteredCategories.length == 0){
+				$entry.removeClass("hidden");
+			}
+			else{
+				var $foundCategory = false;
+				for(var i = 0; i < $filteredCategories.length; i++){
+					if($categories !== null && $categories !== undefined 
+					&& $categories.indexOf($filteredCategories[i]) !== -1){
+						$foundCategory = true;
+						$entry.removeClass('hidden');
+						break;
+					}
+				}
+				
+				if(!$foundCategory){
+					$entry.addClass('hidden');
+				}
+			}
+		});
+    });
+
     $('.input-container').on('click','.default',function () {
         var $context=$(this).parents('.context'),
             $update=$(this),
@@ -122,7 +150,7 @@ $(document).ready(function () {
 			return;
 		}
         var blobBuilder=new BlobBuilder();
-        blobBuilder.append($context.find('.output-container .view').text());
+        blobBuilder.append(populateXmlFromFields($context));
         var blob=blobBuilder.getBlob('data:application/xml;charset='+document.characterSet);
         var formData=new FormData();
         formData.append($context.find('.output-container .controls .filename').val(),blob.data);
@@ -192,6 +220,7 @@ $(document).ready(function () {
             $context.find('.input-container .default').trigger('click');
         }).always(function () {
             populateXmlFromFields($context);
+			wireInput($context.find('.filter-bar .input'));
 			loaded = true;
         });
     });
@@ -259,7 +288,6 @@ $(document).ready(function () {
                 if($section.hasClass("self-incrementing")) {
                     if($input.val()==="") {
 						$otherIDs = $context.find(".input-container .self-incrementing .input");
-						window.alert($otherIDs.length);
 						if($otherIDs.length === 1){
 							$input.val(1);
 						}
@@ -268,7 +296,6 @@ $(document).ready(function () {
 							$choices=$.map($otherIDs,function (otherID) {
 											return $(otherID).val();
                                         });
-							window.alert($choices);
 							$input.val(Math.max.apply(null, $choices)+1);
 						}
                         fieldValue=$input.val();
@@ -309,10 +336,11 @@ $(document).ready(function () {
             });
         });
         var xmlBodyText=new XMLSerializer().serializeToString(root);
-	var xmlHeaderText='<?xml version="1.0" encoding="'+document.characterSet+'" ?>';
+		var xmlHeaderText='<?xml version="1.0" encoding="'+document.characterSet+'" ?>';
         var xmlText = fixXmlns(selfCloseTags(vkbeautify.xml(xmlHeaderText + xmlBodyText)));
         $context.find('.output-container .view').removeClass('prettyprinted').text(xmlText);
         prettyPrint();
+		return xmlText;
     }
 
     function fixXmlns(xmlText) {

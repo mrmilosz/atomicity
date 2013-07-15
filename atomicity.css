@@ -167,7 +167,7 @@ body {
    -o-box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.5);
    -webkit-box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.5);
    -ms-box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.5);
-   box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.5);
+   box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.5);
 }
 
 .atomicity .entry.add .label {
@@ -175,6 +175,7 @@ body {
 }
 
 .landing-page .selection-section,
+.atomicity .filter-bar,
 .atomicity .input-container,
 .atomicity .output-container {
 	text-align: left;
@@ -187,6 +188,7 @@ body {
 }
 
 .landing-page .selection-section .label,
+.atomicity .filter-bar .label,
 .atomicity .input-container .label {
 	vertical-align: top;
 	font-size: 14px;
@@ -197,12 +199,14 @@ body {
 	white-space: nowrap;
 }
 
-.landing-page .selection-section .label,
+.landing-page .selection-section .label:hover,
+.atomicity .filter-bar:hover,
 .atomicity .input-container .label:hover {
 	background-color: #e7e7e7;
 }
 
-.landing-page .selection-section .label,
+.landing-page .selection-section .label:hover,
+.atomicity .filter-bar:hover,
 .atomicity .input-container .label:active {
 	background-color: #e0e0e0;
 }
