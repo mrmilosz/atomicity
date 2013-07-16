@@ -101,6 +101,10 @@ body {
 	width: 100%;
 }
 
+.atomicity .vertically-centered.table-cell {
+	vertical-align: middle;
+}
+
 .atomicity .parenty.table-cell {
    position: relative;
 }
