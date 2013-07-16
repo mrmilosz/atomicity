@@ -55,10 +55,21 @@ $(document).ready(function () {
     * Event handlers
     */
 
-    $('.input-container').on('keydown change','.input',function () {
+    $('.input-container').on('keydown change','.input',function (event) {
         var $this=$(this);
         var $context=$this.parents('.context');
         setTimeout(function () {
+			if($this.parents('.section').is('[data-name="category"][data-attr="term"]')
+			  && $context.is('.meta')){
+				$entryTitle = $this.parents('.entry').find('.section.category-title .input').val();
+				$inheritedCategories = $this.val().split(/\s*,\s*/);
+				if(!checkForCicularInheritance($entryTitle, $inheritedCategories)){
+					event.preventDefault && event.preventDefault();
+					event.cancelBubbling && event.cancelBubbling();
+					$this.parents('.section').find('.tagit').find('a').last().trigger('click');
+					return false;
+				}
+			}
             populateXmlFromFields($context);
             updateExpandButtonText($this);
             checkForEmptiness($this);
@@ -211,6 +222,8 @@ $(document).ready(function () {
         $context.find('.output-container .controls .filename').val(filename); // Fixes a Chrome quirk
 
         $.ajax({
+			username: 'ncentral',
+			password: 'c1dd17f5eea3abecee7987b5b9c407fd',
             url: config.xmlDirectory+'/'+filename,
             dataType: 'text'
         }).done(function (xmlText) {
@@ -581,9 +594,19 @@ $(document).ready(function () {
 			});
 			
 		}
-		
-		
-		 
-
+	}
+	function checkForCicularInheritance($title, $inheritedCategories){
+		while($inheritedCategories.length != 0) {
+			$currEntry = getMetaEntryByTitle($inheritedCategories.pop());
+			$currTitle = $currEntry.find('.section.category-title .input').val();
+			if($title === $currTitle){
+				return false;
+			}
+			$inheritedCategories = $inheritedCategories.concat($.grep($currEntry.find('.section[data-name="category"][data-attr="term"] .input').val().split(/\s*,\s*/), function(bar) { return bar !== '' }));
+		}
+		return true;
+	}
+	function getMetaEntryByTitle($title){
+		return $('.context.meta .section[data-name="title"] .input').filter(function() { return $(this).val() === $title; }).parents('.entry');
 	}
 });
