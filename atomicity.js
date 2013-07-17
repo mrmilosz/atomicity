@@ -48,7 +48,8 @@ $(document).ready(function () {
     */
     var config={
         xmlDirectory: 'xml',
-        atomNamespace: 'http://www.w3.org/2005/Atom'
+        atomNamespace: 'http://www.w3.org/2005/Atom',
+		xmlEncoding: 'iso-8859-1'
     };
 
     /*
@@ -179,7 +180,7 @@ $(document).ready(function () {
 		}
         var blobBuilder=new BlobBuilder();
         blobBuilder.append(populateXmlFromFields($context));
-        var blob=blobBuilder.getBlob('data:application/xml;charset='+document.characterSet);
+        var blob=blobBuilder.getBlob('data:application/xml;charset='+config.xmlEncoding);
         var formData=new FormData();
         formData.append($context.find('.output-container .controls .filename').val(),blob.data);
 
@@ -202,7 +203,7 @@ $(document).ready(function () {
 
         var blobBuilder=new BlobBuilder();
         blobBuilder.append($context.find('.output-container .view').text());
-        var blob=blobBuilder.getBlob('data:application/xml;charset='+document.characterSet);
+        var blob=blobBuilder.getBlob('data:application/xml;charset='+config.xmlEncoding);
         saveAs(blob,$context.find('.output-container .controls .filename').val());
     });
 
@@ -366,7 +367,7 @@ $(document).ready(function () {
             });
         });
         var xmlBodyText=new XMLSerializer().serializeToString(root);
-		var xmlHeaderText='<?xml version="1.0" encoding="'+document.characterSet+'" ?>';
+		var xmlHeaderText='<?xml version="1.0" encoding="'+config.xmlEncoding+'" ?>';
         var xmlText = fixXmlns(selfCloseTags(vkbeautify.xml(xmlHeaderText + xmlBodyText)));
         $context.find('.output-container .view').removeClass('prettyprinted').text(xmlText);
         prettyPrint();
