@@ -71,7 +71,6 @@ $(document).ready(function () {
 					return false;
 				}
 			}
-            populateXmlFromFields($context);
             updateExpandButtonText($this);
             checkForEmptiness($this);
 			if(loaded){
@@ -134,8 +133,6 @@ $(document).ready(function () {
         if($section.hasClass('timestamp')) {
             $input.val(prettyTime());
         }
-
-        populateXmlFromFields($context);
     });
 
     $('.input-container').on('click','.entry .delete',function () {
@@ -145,15 +142,11 @@ $(document).ready(function () {
         if(confirm('Do you really want to delete this entry?')) {
             $entry.remove();
         }
-
-        populateXmlFromFields($context);
     });
 
     $('.input-container .add.entry .add').on('click',function () {
         var $context=$(this).parents('.context'),
             $entry=addEntry($context);
-
-        populateXmlFromFields($context);
 
         if($context.find('.input-container .expanded.entry').length===0) {
             $entry.find('.expand').trigger('click');
@@ -222,7 +215,6 @@ $(document).ready(function () {
             $context.find('.output-container .controls .filename').val(filename);
             var xml=atob(event.target.result.replace(/^.*,/,'')).replace(/^.*?\?>\n?/,''); // look into cleaner ways of doing this (Blob?)
             populateFieldsFromXml(xml,$context);
-            populateXmlFromFields($context);
         });
 
         reader.readAsDataURL(event.target.files[0]);
@@ -250,8 +242,7 @@ $(document).ready(function () {
         }).fail(function () {
             $context.find('.input-container .default').trigger('click');
         }).always(function () {
-            populateXmlFromFields($context);
-			wireInput($context.find('.filter-bar .input'));
+            wireInput($context.find('.filter-bar .input'));
 			loaded = true;
         });
     });
