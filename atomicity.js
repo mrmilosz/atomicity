@@ -68,7 +68,23 @@ $(document).ready(function () {
 			ensureCategoriesExist($this);
         },0);
     });
-
+	
+	$('.input-container').on('blur','.section.timestamp .input',function () {
+		$input = $(this);
+		$section = $input.parents('.section');
+		$time = $input.val();
+		setTimeout(function () {
+			if(!moment($time).isValid()){
+				$section.addClass('invalid-time');
+				return;
+			}
+			else{
+				$section.removeClass('invalid-time');
+			}
+			$input.val(prettyTime($time));
+		},0);
+    });
+	
     $('.filter-bar').on('keydown change','.input',function () {
         var $this=$(this);
 		var $context = $this.parents('.context');
@@ -142,7 +158,8 @@ $(document).ready(function () {
     $('.output-container .controls button.save').on('click',function () {
         var $context=$(this).parents('.context');
         if($context.find(".input-container .section.invalid-empty").length>0
-			||$context.find(".input-container .section.invalid-no-category").length>0) {
+			||$context.find(".input-container .section.invalid-no-category").length>0
+			||$context.find(".input-container .section.invalid-timestamp").length>0) {
             alert("Can't save while there are errors. correct fields marked in red.");
             return;
         }
@@ -561,8 +578,15 @@ $(document).ready(function () {
         }
     }
 	function updateUpdateFields($input) {
-		$input.parents('.context').find('.section[data-name~="updated"]').first().find('.input').val(prettyTime());
-		$input.parents('.section-group').find('.section[data-name~="updated"]').first().find('.input').val(prettyTime());
+		$section = $input.parents('.section');
+		if(!$section.is('[data-name="updated"]')){
+			$updateSection = $input.parents('.context').find('.section[data-name~="updated"]').first();
+			$updateSection.find('.input').val(prettyTime());
+			$updateSection.removeClass('invalid-time');
+			$updateSection = $input.parents('.section-group').find('.section[data-name~="updated"]').first();
+			$updateSection.find('.input').val(prettyTime());
+			$updateSection.removeClass('invalid-time');
+		}
 		
 	}
 	function ensureCategoriesExist($input) {

@@ -156,6 +156,7 @@ body {
 
 .atomicity .section.invalid-no-category .input,
 .atomicity .section.invalid-no-category .input.field ~ .tagit,
+.atomicity .section.invalid-time .input,
 .atomicity .section.invalid-empty .input,
 .atomicity .section.invalid-empty .input.field ~ .tagit {
 	-moz-outline: red auto 5px;
