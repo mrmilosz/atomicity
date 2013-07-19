@@ -58,8 +58,9 @@ $(document).ready(function() {
    $('.input-container').on('keydown change', '.input', function(event) {
       var $this = $(this);
       var $context = $this.parents('.context');
+      var updateTimestamps = loaded;
       setTimeout(function() {
-			if ($this.parents('.section').is('[data-name = "category"][data-attr = "term"]') && $context.is('.meta')) {
+			if ($this.parents('.section').is('[data-name="category"][data-attr="term"]') && $context.is('.meta')) {
 				$entryTitle = $this.parents('.entry').find('.section.category-title .input').val();
 				$inheritedCategories = $this.val().split(/\s*,\s*/);
 				if (!checkForCicularInheritance($entryTitle, $inheritedCategories)) {
@@ -72,6 +73,9 @@ $(document).ready(function() {
          updateExpandButtonText($this);
          checkForEmptiness($this);
 			ensureCategoriesExist($this);
+         if (updateTimestamps) {
+            updateUpdateFields($this);
+         }
       }, 0);
    });
 	
@@ -165,7 +169,7 @@ $(document).ready(function() {
 		}
       var blobBuilder = new BlobBuilder();
       blobBuilder.append(populateXmlFromFields($context));
-      var blob = blobBuilder.getBlob('data:application/xml;charset = ' + config.xmlEncoding);
+      var blob = blobBuilder.getBlob('data:application/xml;charset=' + config.xmlEncoding);
       var formData = new FormData();
       formData.append($context.find('.output-container .controls .filename').val(), blob.data);
 
@@ -217,12 +221,13 @@ $(document).ready(function() {
     * Startup
     */
 
-   $('.context').each(function(_, context) {
+   var loaded = false;
+   $.when.apply($, $.map($('.context'), function(context) {
       var $context = $(context);
       var filename = $context.find('.output-container .controls .filename').val();
       $context.find('.output-container .controls .filename').val(filename); // Fixes a Chrome quirk
 
-      $.ajax({
+      return $.ajax({
 			username: 'ncentral', 
 			password: 'c1dd17f5eea3abecee7987b5b9c407fd', 
          url: config.xmlDirectory + '/' + filename, 
@@ -235,6 +240,8 @@ $(document).ready(function() {
       }).always(function() {
          wireInput($context.find('.filter-bar .input'));
       });
+   })).then(function() {
+      loaded = true;
    });
 
    $('.input-container .input').first().focus();
@@ -611,6 +618,7 @@ $(document).ready(function() {
 		}
 		return true;
 	}
+
 	function getMetaEntryByTitle($title) {
 		return $('.context.meta .section[data-name="title"] .input').filter(function() { return $(this).val() === $title; }).parents('.entry');
 	}
