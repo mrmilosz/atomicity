@@ -326,26 +326,26 @@ $(document).ready(function() {
                if ($section.hasClass('multi')) {
                   if (attr !== undefined) {
                      var $nodes = $($.map(fieldValue.split(/\s*,\s*/), function(value) {
-                        return value.length > 0?$(document.createElementNS(config.atomNamespace, fieldName)).attr(attr, value).get(0) : null;
+                        return value.length > 0?$(document.createElementNS(config.atomNamespace, fieldName)).attr(attr, escapeXmlEntities(value)).get(0) : null;
                      }));
                   }
                   else {
                      var $nodes = $($.map(fieldValue.split(/\s*,\s*/), function(value) {
-                        return value.length > 0 ? $(document.createElementNS(config.atomNamespace, fieldName)).text(value).get(0) : null;
+                        return value.length > 0 ? $(document.createElementNS(config.atomNamespace, fieldName)).text(escapeXmlEntities(value)).get(0) : null;
                      }));
                   }
                }
                else {
                   if (attr !== undefined) {
-                     var $nodes = $(document.createElementNS(config.atomNamespace, fieldName)).attr(attr, fieldValue);
+                     var $nodes = $(document.createElementNS(config.atomNamespace, fieldName)).attr(attr, escapeXmlEntities(fieldValue));
                   }
                   else {
-                     var $nodes = $(document.createElementNS(config.atomNamespace, fieldName)).text(fieldValue);
+                     var $nodes = $(document.createElementNS(config.atomNamespace, fieldName)).text(escapeXmlEntities(fieldValue));
                   }
                }
 
                if (definingAttrValue !== null) {
-                  $nodes.attr(definingAttr, definingAttrValue);
+                  $nodes.attr(definingAttr, escapeXmlEntities(definingAttrValue));
                }
 
                $container.append($nodes);
@@ -412,7 +412,7 @@ $(document).ready(function() {
                      $input.tagit('createTag', fieldValue);
                   }
                   else {
-                     $input.val(extendCommaSeparatedList($input.val(), fieldValue));
+                     $input.val(extendCommaSeparatedList($input.val(), unescapeXmlEntities(fieldValue)));
                   }
                }
                else {
@@ -433,7 +433,7 @@ $(document).ready(function() {
 						fieldValue = $input.val();
 						}
                   else {
-                     $input.val(fieldValue);
+                     $input.val(unescapeXmlEntities(fieldValue));
                   }
                }
 
@@ -622,4 +622,19 @@ $(document).ready(function() {
 	function getMetaEntryByTitle($title) {
 		return $('.context.meta .section[data-name="title"] .input').filter(function() { return $(this).val() === $title; }).parents('.entry');
 	}
+
+   // http://stackoverflow.com/a/1354715
+   function escapeXmlEntities(text) {
+      return (text || '').replace(/[\u00A0-\u2666<>\&]/g, function(character) {
+         return '&#' + character.charCodeAt(0) + ';';
+      });
+   }
+
+   // http://stackoverflow.com/a/4339083
+   function unescapeXmlEntities(text) {
+      return (text || '').replace(/&#(\d+);/g, function(_, charCodeString) {
+         return String.fromCharCode(parseInt(charCodeString, 10));
+      });
+   }
+
 });
